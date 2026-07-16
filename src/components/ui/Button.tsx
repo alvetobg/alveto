@@ -18,14 +18,14 @@ export default function Button({
   disabled = false,
 }: ButtonProps) {
   const base =
-    "inline-flex items-center justify-center rounded-2xl px-7 py-3.5 text-sm font-semibold tracking-wide transition-all duration-300";
+    "inline-flex items-center justify-center rounded-2xl px-7 py-3 text-sm font-semibold tracking-wide transition-all duration-300 ease-out";
 
   const variants = {
     primary:
-      "bg-primary text-white hover:scale-[1.03] hover:bg-primary-hover shadow-lg",
+      "bg-primary text-white shadow-lg hover:-translate-y-0.5 hover:bg-primary-hover hover:shadow-xl active:translate-y-0",
 
     secondary:
-      "border border-white/70 bg-transparent text-white hover:bg-white hover:text-dark",
+      "border border-white/70 bg-transparent text-white hover:bg-white hover:text-dark hover:border-white",
 
     ghost:
       "bg-transparent text-dark hover:bg-black/5",
@@ -36,11 +36,11 @@ export default function Button({
       href={disabled ? "#" : href}
       aria-disabled={disabled}
       className={cn(
-  base,
-  variants[variant],
-  disabled && "pointer-events-none opacity-50",
-  className
-)}
+        base,
+        variants[variant],
+        disabled && "pointer-events-none opacity-50",
+        className
+      )}
     >
       {children}
     </Link>
