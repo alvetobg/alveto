@@ -1,12 +1,20 @@
+import { site } from "@/lib/site";
+
 export default function StructuredData() {
   const data = {
     "@context": "https://schema.org",
     "@type": "CafeOrCoffeeShop",
-    name: "ALVETO",
+
+    name: site.name,
+
     image: "https://alveto-bg.com/images/hero.jpg",
+
     url: "https://alveto-bg.com",
-    telephone: "+381665707777",
-    email: "alveto.bg@gmail.com",
+
+    telephone: site.phone,
+
+    email: site.email,
+
     servesCuisine: [
       "Breakfast",
       "Brunch",
@@ -14,6 +22,7 @@ export default function StructuredData() {
       "Coffee",
       "Cocktails",
     ],
+
     priceRange: "$$",
 
     address: {
@@ -48,7 +57,8 @@ export default function StructuredData() {
     ],
 
     sameAs: [
-      "https://instagram.com/alveto.bg",
+      site.instagram,
+      site.maps,
     ],
   };
 

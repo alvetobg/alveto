@@ -2,11 +2,12 @@ import Image from "next/image";
 
 import Container from "@/components/ui/Container";
 import Button from "@/components/ui/Button";
+import { site } from "@/lib/site";
 
 export default function Footer() {
   return (
     <footer className="relative overflow-hidden bg-[#1B1B1B] text-white">
-      {/* Background glow */}
+      {/* Background Glow */}
 
       <div className="absolute left-1/2 top-0 h-[500px] w-[500px] -translate-x-1/2 rounded-full bg-primary/10 blur-[140px]" />
 
@@ -19,7 +20,6 @@ export default function Footer() {
             alt="Alveto"
             width={190}
             height={70}
-            priority={false}
             className="mx-auto mb-10"
           />
 
@@ -36,7 +36,7 @@ export default function Footer() {
           </p>
 
           <div className="mt-12">
-            <Button href="#reservation">
+            <Button href={site.instagram}>
               Reserve a Table
             </Button>
           </div>
@@ -49,13 +49,14 @@ export default function Footer() {
 
           <div className="text-center md:text-left">
             <h3 className="text-2xl font-bold">
-              ALVETO
+              {site.name}
             </h3>
 
             <p className="mt-6 max-w-sm leading-8 text-white/65">
               More than coffee.
               <br />
-              A place to slow down, enjoy great food and create memorable moments.
+              A place to slow down, enjoy great food and create memorable
+              moments.
             </p>
           </div>
 
@@ -66,11 +67,16 @@ export default function Footer() {
               Visit
             </h4>
 
-            <p className="leading-8 text-white/80">
+            <a
+              href={site.maps}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="leading-8 text-white/80 transition-colors duration-300 hover:text-primary"
+            >
               Sokolska 4
               <br />
               Belgrade, Serbia
-            </p>
+            </a>
           </div>
 
           {/* Hours */}
@@ -96,26 +102,35 @@ export default function Footer() {
 
             <div className="space-y-3">
               <a
-                href="mailto:alveto.bg@gmail.com"
+                href={`mailto:${site.email}`}
                 className="block transition-colors duration-300 hover:text-primary"
               >
-                alveto.bg@gmail.com
+                {site.email}
               </a>
 
               <a
-                href="tel:+381665707777"
+                href={`tel:${site.phone}`}
                 className="block transition-colors duration-300 hover:text-primary"
               >
-                +381 66 570 7777
+                {site.phoneDisplay}
               </a>
 
               <a
-                href="https://instagram.com"
+                href={site.instagram}
                 target="_blank"
-                rel="noreferrer"
+                rel="noopener noreferrer"
                 className="block transition-colors duration-300 hover:text-primary"
               >
                 Instagram
+              </a>
+
+              <a
+                href={site.maps}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block transition-colors duration-300 hover:text-primary"
+              >
+                Google Maps
               </a>
             </div>
           </div>
@@ -125,11 +140,11 @@ export default function Footer() {
 
         <div className="flex flex-col items-center justify-between gap-4 border-t border-white/10 py-8 text-sm text-white/40 md:flex-row">
           <p>
-            © {new Date().getFullYear()} ALVETO. All rights reserved.
+            © {new Date().getFullYear()} {site.name}. All rights reserved.
           </p>
 
           <p>
-            Crafted with care in Belgrade.
+            Every Moment Has a Flavor.
           </p>
         </div>
       </Container>

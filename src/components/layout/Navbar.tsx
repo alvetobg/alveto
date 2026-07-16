@@ -5,9 +5,10 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 
 import Button from "@/components/ui/Button";
+import { site } from "@/lib/site";
 
 export default function Navbar() {
-  const [scrolled, setScrolled] =useState(false);
+  const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
     const onScroll = () => {
@@ -32,7 +33,7 @@ export default function Navbar() {
           : "bg-transparent"
       }`}
     >
-      <div className="mx-auto flex h-[88px] max-w-7xl items-center justify-between px-5 sm:px-6 lg:h-24 lg:px-12 xl:px-16">
+      <div className="mx-auto flex h-[88px] max-w-7xl items-center justify-between px-8 lg:h-24 lg:px-12 xl:px-16">
         <Link
           href="/"
           aria-label="ALVETO Home"
@@ -51,11 +52,11 @@ export default function Navbar() {
 
         <nav
           aria-label="Main navigation"
-          className="flex items-center gap-3 sm:gap-5 lg:gap-8"
+          className="flex items-center gap-6 lg:gap-8"
         >
           <a
             href="#experience"
-            className={`hidden text-[15px] font-semibold tracking-wide transition-colors duration-300 md:block ${
+            className={`text-[15px] font-semibold tracking-wide transition-colors duration-300 ${
               scrolled
                 ? "text-dark hover:text-primary"
                 : "text-white hover:text-white/80"
@@ -75,7 +76,7 @@ export default function Navbar() {
             Menu
           </Link>
 
-          <Button href="#reservation">
+          <Button href={site.instagram}>
             Reserve
           </Button>
         </nav>
