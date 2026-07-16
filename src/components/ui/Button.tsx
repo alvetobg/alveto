@@ -31,16 +31,36 @@ export default function Button({
       "bg-transparent text-dark hover:bg-black/5",
   };
 
+  const classes = cn(
+    base,
+    variants[variant],
+    disabled && "pointer-events-none opacity-50",
+    className
+  );
+
+  if (
+    href.startsWith("http") ||
+    href.startsWith("mailto:") ||
+    href.startsWith("tel:")
+  ) {
+    return (
+      <a
+        href={disabled ? "#" : href}
+        className={classes}
+        target={href.startsWith("http") ? "_blank" : undefined}
+        rel={href.startsWith("http") ? "noopener noreferrer" : undefined}
+        aria-disabled={disabled}
+      >
+        {children}
+      </a>
+    );
+  }
+
   return (
     <Link
       href={disabled ? "#" : href}
       aria-disabled={disabled}
-      className={cn(
-        base,
-        variants[variant],
-        disabled && "pointer-events-none opacity-50",
-        className
-      )}
+      className={classes}
     >
       {children}
     </Link>
