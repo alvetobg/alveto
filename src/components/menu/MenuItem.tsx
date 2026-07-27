@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { getOptionalImageSource } from "@/lib/images";
 
 type MenuItemProps = {
   name: string;
@@ -17,8 +18,7 @@ export default function MenuItem({
   badge,
   onClick,
 }: MenuItemProps) {
-  const hasImage =
-    !!image && image.trim().length > 0;
+  const imageSource = getOptionalImageSource(image);
 
   return (
     <article
@@ -34,14 +34,14 @@ export default function MenuItem({
       className="group cursor-pointer overflow-hidden rounded-[32px] border border-black/5 bg-white shadow-[0_10px_35px_rgba(0,0,0,0.05)] transition-all duration-500 hover:-translate-y-1 hover:border-primary/10 hover:shadow-[0_25px_60px_rgba(0,0,0,0.12)] focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 motion-reduce:transform-none motion-reduce:transition-none"
     >
       <div className="flex flex-col overflow-hidden md:flex-row">
-        {hasImage && (
+        {imageSource && (
           <div className="relative h-56 w-full overflow-hidden md:h-auto md:w-72 md:flex-shrink-0">
             <Image
-              src={image}
+              src={imageSource}
               alt={name}
               fill
-              quality={90}
-              sizes="(max-width:768px) 100vw, 288px"
+              quality={85}
+              sizes="(max-width: 767px) calc(100vw - 48px), 288px"
               className="object-cover transition-transform duration-700 ease-out group-hover:scale-105 motion-reduce:transform-none motion-reduce:transition-none"
             />
 

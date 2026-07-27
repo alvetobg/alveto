@@ -16,22 +16,22 @@ export default function About() {
             <div className="relative">
               <div className="group relative h-[500px] overflow-hidden rounded-[40px] shadow-[0_25px_60px_rgba(0,0,0,0.08)] sm:h-[580px] lg:h-[720px] lg:rounded-[56px]">
                 <Image
-                  src="/images/about/interior-1.jpg"
+                  src="/images/about/interior-1.webp"
                   alt="Alveto Interior"
                   fill
-                  quality={90}
-                  sizes="(max-width:768px) 100vw, 50vw"
+                  quality={85}
+                  sizes="(max-width: 767px) calc(100vw - 48px), (max-width: 1023px) calc(100vw - 64px), 544px"
                   className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
                 />
               </div>
 
               <div className="absolute -bottom-12 -right-8 hidden h-60 w-48 overflow-hidden rounded-[28px] border-8 border-white shadow-[0_20px_50px_rgba(0,0,0,0.12)] lg:block xl:h-72 xl:w-56 xl:rounded-[36px]">
                 <Image
-                  src="/images/about/interior-2.jpg"
+                  src="/images/about/interior-2.webp"
                   alt="Alveto Interior"
                   fill
-                  quality={90}
-                  sizes="300px"
+                  quality={85}
+                  sizes="224px"
                   className="object-cover transition-transform duration-700 hover:scale-105"
                 />
               </div>

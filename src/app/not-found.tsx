@@ -17,12 +17,12 @@ export default function NotFound() {
 
       <div className="relative z-10 mx-auto max-w-2xl text-center">
         <Image
-          src="/logos/alveto-logo.png"
+          src="/logos/alveto-wordmark.png"
           alt="ALVETO"
           width={240}
-          height={90}
-          priority
-          className="mx-auto mb-10"
+          height={59}
+          sizes="240px"
+          className="mx-auto mb-10 h-auto w-[240px]"
         />
 
         <p className="mb-4 text-sm font-semibold uppercase tracking-[8px] text-primary">

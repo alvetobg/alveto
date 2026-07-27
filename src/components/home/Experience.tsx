@@ -25,7 +25,7 @@ export default function Experience() {
         <div className="space-y-8 md:space-y-12">
           <FadeIn>
             <Moment
-              image="/images/experience/morning.jpg"
+              image="/images/experience/morning.webp"
               title="Morning"
               text="Fresh coffee, artisan breakfast and slow mornings made to be enjoyed."
             />
@@ -33,7 +33,7 @@ export default function Experience() {
 
           <FadeIn delay={0.15}>
             <Moment
-              image="/images/experience/afternoon.jpg"
+              image="/images/experience/afternoon.webp"
               title="Afternoon"
               text="Brunch favorites, waffles and signature creations for every taste."
             />
@@ -41,7 +41,7 @@ export default function Experience() {
 
           <FadeIn delay={0.3}>
             <Moment
-              image="/images/experience/evening.jpg"
+              image="/images/experience/evening.webp"
               title="Evening"
               text="Cocktails, desserts and warm conversations as the day comes to an end."
             />
@@ -68,8 +68,8 @@ function Moment({
         src={image}
         alt={title}
         fill
-        quality={90}
-        sizes="(max-width:768px) 100vw, 1280px"
+        quality={85}
+        sizes="(max-width: 767px) calc(100vw - 48px), (max-width: 1023px) calc(100vw - 64px), 1184px"
         className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.07]"
       />
 

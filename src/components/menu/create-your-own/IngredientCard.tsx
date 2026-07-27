@@ -1,8 +1,9 @@
 import Image from "next/image";
+import { getOptionalImageSource } from "@/lib/images";
 
 export type IngredientCardProps = {
   name: string;
-  image: string;
+  image?: string;
   price: number;
   selected: boolean;
   onClick: () => void;
@@ -15,8 +16,11 @@ export default function IngredientCard({
   selected,
   onClick,
 }: IngredientCardProps) {
+  const imageSource = getOptionalImageSource(image);
+
   return (
     <button
+      type="button"
       onClick={onClick}
       className={`group relative overflow-hidden rounded-[32px] border bg-white text-left transition-all duration-300 ${
         selected
@@ -25,12 +29,21 @@ export default function IngredientCard({
       }`}
     >
       <div className="relative aspect-square overflow-hidden">
-        <Image
-          src={image}
-          alt={name}
-          fill
-          className="object-cover transition-transform duration-700 group-hover:scale-110"
-        />
+        {imageSource ? (
+          <Image
+            src={imageSource}
+            alt={name}
+            fill
+            quality={85}
+            sizes="(max-width: 767px) calc(50vw - 36px), 280px"
+            className="object-cover transition-transform duration-700 group-hover:scale-110"
+          />
+        ) : (
+          <div
+            aria-hidden="true"
+            className="absolute inset-0 bg-gradient-to-br from-[#4b2e20] via-[#9a6040] to-primary"
+          />
+        )}
 
         <div className="absolute inset-0 bg-gradient-to-t from-black/35 via-transparent to-transparent" />
 

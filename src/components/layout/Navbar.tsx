@@ -44,13 +44,12 @@ export default function Navbar() {
           className="shrink-0"
         >
           <Image
-            src="/logos/alveto-logo.png"
+            src="/logos/alveto-wordmark.png"
             alt="Alveto"
             width={132}
-            height={42}
-            priority
+            height={32}
             sizes="132px"
-            className="transition-transform duration-300 hover:scale-[1.03]"
+            className="h-auto w-[132px] transition-transform duration-300 hover:scale-[1.03]"
           />
         </Link>
 

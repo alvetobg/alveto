@@ -4,12 +4,14 @@ export default function MenuHero() {
   return (
     <section className="relative flex h-[65vh] items-center justify-center overflow-hidden">
       <Image
-  src="/images/menu-hero.jpg"
-  alt="Menu"
-  fill
-  priority
-  className="object-cover"
-/>
+        src="/images/menu-hero.webp"
+        alt="Menu"
+        fill
+        priority
+        quality={85}
+        sizes="100vw"
+        className="object-cover"
+      />
 
       <div className="absolute inset-0 bg-black/55" />
 

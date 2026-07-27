@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { getOptionalImageSource } from "@/lib/images";
 
 type CategoryHeroProps = {
   title: string;
@@ -9,7 +10,7 @@ export default function CategoryHero({
   title,
   image,
 }: CategoryHeroProps) {
-  const heroImage = image?.trim() || null;
+  const heroImage = getOptionalImageSource(image);
 
   return (
     <section className="relative mb-16 h-[420px] overflow-hidden rounded-[40px] bg-gradient-to-br from-[#4b2e20] via-[#9a6040] to-primary">
@@ -19,7 +20,8 @@ export default function CategoryHero({
           src={heroImage}
           alt={title}
           fill
-          priority
+          quality={85}
+          sizes="(max-width: 767px) calc(100vw - 48px), (max-width: 1023px) calc(100vw - 64px), 1184px"
           className="scale-105 object-cover transition-transform duration-700"
         />
       )}

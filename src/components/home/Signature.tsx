@@ -28,8 +28,8 @@ export default function Signature() {
                     src={product.image}
                     alt={product.name}
                     fill
-                    quality={90}
-                    sizes="(max-width:768px) 100vw, (max-width:1280px) 90vw, 1280px"
+                    quality={85}
+                    sizes="(max-width: 767px) calc(100vw - 48px), (max-width: 1023px) calc(100vw - 64px), 1024px"
                     className="object-cover transition-transform duration-700 ease-out will-change-transform group-hover:scale-[1.025]"
                   />
                 </div>

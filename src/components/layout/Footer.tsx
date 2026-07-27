@@ -16,11 +16,12 @@ export default function Footer() {
 
         <div className="relative border-b border-white/10 py-24 text-center md:py-32">
           <Image
-            src="/logos/alveto-logo.png"
+            src="/logos/alveto-wordmark.png"
             alt="Alveto"
             width={190}
-            height={70}
-            className="mx-auto mb-10"
+            height={46}
+            sizes="190px"
+            className="mx-auto mb-10 h-auto w-[190px]"
           />
 
           <h2 className="mx-auto max-w-3xl text-5xl font-bold tracking-tight md:text-6xl">

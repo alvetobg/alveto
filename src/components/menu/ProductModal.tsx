@@ -4,6 +4,7 @@ import Image from "next/image";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { createPortal } from "react-dom";
 import { useEffect, useId, useRef } from "react";
+import { getOptionalImageSource } from "@/lib/images";
 
 type ProductModalProps = {
   open: boolean;
@@ -12,7 +13,7 @@ type ProductModalProps = {
     name: string;
     description: string;
     price: number;
-    image: string;
+    image?: string;
     badge?: string;
   } | null;
 };
@@ -120,8 +121,7 @@ export default function ProductModal({
 
   if (!product || typeof document === "undefined") return null;
 
-  const hasImage =
-    !!product.image && product.image.trim().length > 0;
+  const imageSource = getOptionalImageSource(product.image);
 
   return createPortal(
     <AnimatePresence>
@@ -163,14 +163,14 @@ export default function ProductModal({
             className="fixed left-1/2 top-1/2 z-10 flex max-h-[calc(100dvh-1.5rem)] w-[calc(100%-1.5rem)] max-w-4xl -translate-x-1/2 -translate-y-1/2 flex-col overflow-hidden rounded-[28px] bg-white shadow-[0_30px_100px_rgba(0,0,0,0.35)] sm:max-h-[calc(100dvh-3rem)] sm:w-[calc(100%-3rem)] sm:rounded-[32px] md:rounded-[36px]"
           >
             <div className="min-h-0 overflow-y-auto overscroll-contain">
-              {hasImage ? (
+              {imageSource ? (
                 <div className="group relative h-56 overflow-hidden sm:h-72 md:h-[420px]">
                   <Image
-                    src={product.image}
+                    src={imageSource}
                     alt={product.name}
                     fill
-                    quality={90}
-                    sizes="(max-width:768px) 100vw, 900px"
+                    quality={85}
+                    sizes="(max-width: 639px) calc(100vw - 24px), (max-width: 767px) calc(100vw - 48px), 896px"
                     className="object-cover transition-transform duration-700 group-hover:scale-105 motion-reduce:transform-none motion-reduce:transition-none"
                   />
 

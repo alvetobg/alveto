@@ -14,7 +14,7 @@ export default function Hero() {
         alt="Alveto"
         fill
         priority
-        quality={100}
+        quality={85}
         sizes="100vw"
         className="object-cover object-center scale-[1.02]"
       />
@@ -28,13 +28,13 @@ export default function Hero() {
       <div className="relative z-10 mx-auto flex w-full max-w-7xl flex-col items-center px-6 pt-16 text-center md:pt-24">
         <FadeIn>
           <Image
-            src="/logos/alveto-logo.png"
+            src="/logos/alveto-wordmark.png"
             alt="Alveto"
             width={340}
-            height={128}
-            priority
+            height={83}
+            sizes="(max-width: 767px) 176px, 340px"
             draggable={false}
-            className="mb-8 w-44 select-none md:mb-20 md:w-[340px]"
+            className="mb-8 h-auto w-44 select-none md:mb-20 md:w-[340px]"
           />
         </FadeIn>
 

@@ -100,11 +100,12 @@ export default function MobileMenu({
             <div className="flex items-center justify-between border-b border-black/10 pb-6">
               <Link href="/" aria-label="ALVETO Home" onClick={onClose}>
                 <Image
-                  src="/logos/alveto-logo.png"
+                  src="/logos/alveto-wordmark.png"
                   alt="Alveto"
                   width={120}
-                  height={38}
+                  height={29}
                   sizes="120px"
+                  className="h-auto w-[120px]"
                 />
               </Link>
 
