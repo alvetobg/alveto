@@ -1,3 +1,7 @@
+"use client";
+
+import { useId, useState } from "react";
+
 type SummaryCardProps = {
   title: string;
   base: string;
@@ -9,6 +13,11 @@ type SummaryCardProps = {
   onReset: () => void;
 };
 
+type CopyFeedback = {
+  selection: string;
+  status: "success" | "error";
+};
+
 export default function SummaryCard({
   title,
   base,
@@ -16,10 +25,45 @@ export default function SummaryCard({
   total,
   onReset,
 }: SummaryCardProps) {
+  const feedbackId = useId();
+  const [copyFeedback, setCopyFeedback] = useState<CopyFeedback | null>(null);
   const ingredientCount = sections.reduce(
     (sum, section) => sum + section.items.length,
     0
   );
+  const selectionDetails = sections.flatMap((section) =>
+    section.items.length > 0
+      ? [`${section.title}: ${section.items.join(", ")}`]
+      : []
+  );
+  const selectionText = [
+    `ALVETO - ${title}`,
+    `Base: ${base || "Not selected"}`,
+    ...(selectionDetails.length > 0
+      ? selectionDetails
+      : ["Ingredients: None selected"]),
+    `Total: ${total.toLocaleString("sr-RS")} RSD`,
+  ].join("\n");
+  const currentFeedback =
+    copyFeedback?.selection === selectionText ? copyFeedback.status : null;
+
+  const copySelection = async () => {
+    try {
+      if (!navigator.clipboard?.writeText) {
+        throw new Error("Clipboard API unavailable");
+      }
+
+      await navigator.clipboard.writeText(selectionText);
+      setCopyFeedback({ selection: selectionText, status: "success" });
+    } catch {
+      setCopyFeedback({ selection: selectionText, status: "error" });
+    }
+  };
+
+  const resetSelection = () => {
+    setCopyFeedback(null);
+    onReset();
+  };
 
   return (
     <aside className="overflow-hidden rounded-[36px] border border-neutral-200 bg-white shadow-[0_20px_60px_rgba(0,0,0,0.08)]">
@@ -141,13 +185,35 @@ export default function SummaryCard({
         {/* Buttons */}
 
         <div className="space-y-3">
-          <button className="w-full rounded-2xl bg-primary py-4 text-lg font-bold text-white shadow-lg transition-all duration-300 hover:-translate-y-1 hover:bg-primary-hover hover:shadow-2xl">
-            Save Selection
+          <button
+            type="button"
+            onClick={copySelection}
+            aria-describedby={feedbackId}
+            className="w-full rounded-2xl bg-primary py-4 text-lg font-bold text-white shadow-lg transition-all duration-300 hover:-translate-y-1 hover:bg-primary-hover hover:shadow-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 motion-reduce:transform-none motion-reduce:transition-none"
+          >
+            Copy Selection
           </button>
 
+          <p
+            id={feedbackId}
+            role="status"
+            aria-live="polite"
+            className={`min-h-5 text-center text-sm ${
+              currentFeedback === "error"
+                ? "text-red-700"
+                : "text-neutral-600"
+            }`}
+          >
+            {currentFeedback === "success" &&
+              "Selection copied. Paste it into a message when you are ready."}
+            {currentFeedback === "error" &&
+              "The selection could not be copied. Please try again."}
+          </p>
+
           <button
-            onClick={onReset}
-            className="w-full rounded-2xl border border-neutral-300 py-4 font-semibold transition-colors hover:bg-neutral-100"
+            type="button"
+            onClick={resetSelection}
+            className="w-full rounded-2xl border border-neutral-300 py-4 font-semibold transition-colors hover:bg-neutral-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
           >
             Reset Selection
           </button>

@@ -9,21 +9,20 @@ export default function CategoryHero({
   title,
   image,
 }: CategoryHeroProps) {
-  const heroImage =
-    image && image.trim().length > 0
-      ? image
-      : "/images/menu-hero.jpg";
+  const heroImage = image?.trim() || null;
 
   return (
-    <section className="relative mb-16 h-[420px] overflow-hidden rounded-[40px]">
+    <section className="relative mb-16 h-[420px] overflow-hidden rounded-[40px] bg-gradient-to-br from-[#4b2e20] via-[#9a6040] to-primary">
 
-      <Image
-        src={heroImage}
-        alt={title}
-        fill
-        priority
-        className="scale-105 object-cover transition-transform duration-700"
-      />
+      {heroImage && (
+        <Image
+          src={heroImage}
+          alt={title}
+          fill
+          priority
+          className="scale-105 object-cover transition-transform duration-700"
+        />
+      )}
 
       {/* Overlay */}
       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/45 to-black/10" />

@@ -852,7 +852,7 @@ export const menu: MenuCategory[] = [
   {
   id: "water",
   title: "Water",
-  image: "/images/categories/water.jpg",
+  image: "",
   products: [
     {
       name: "Rosa",
@@ -908,7 +908,7 @@ export const menu: MenuCategory[] = [
   {
   id: "soft-drinks",
   title: "Soft Drinks",
-  image: "/images/categories/soft-drinks.jpg",
+  image: "",
   products: [
     {
       name: "Coca-Cola",
@@ -1233,7 +1233,7 @@ export const menu: MenuCategory[] = [
 {
   id: "wine",
   title: "Wine",
-  image: "/images/categories/wine.jpg",
+  image: "",
   products: [
     {
       name: "Matali Terasa Chardonnay",

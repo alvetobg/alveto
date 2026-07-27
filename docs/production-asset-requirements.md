@@ -14,3 +14,5 @@ Requirements for supplied replacements:
 - Optimized for web delivery; target under 500 KB where visual quality permits.
 
 No generated or unrelated placeholder imagery was used for these categories.
+Until suitable photography is supplied, these categories intentionally use the
+branded image-free category treatment and do not request the empty files.
