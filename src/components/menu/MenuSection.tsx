@@ -6,13 +6,13 @@ import MenuItem from "@/components/menu/MenuItem";
 import CreateYourOwn from "@/components/menu/create-your-own/CreateYourOwn";
 import MenuNavigation from "@/components/menu/MenuNavigation";
 
-import { menu } from "@/data/menu";
+import { menu, type MenuProduct } from "@/data/menu";
 
 import Container from "@/components/ui/Container";
 import ProductModal from "@/components/menu/ProductModal";
 
 export default function MenuSection() {
-  const [selectedProduct, setSelectedProduct] = useState<any>(null);
+  const [selectedProduct, setSelectedProduct] = useState<MenuProduct | null>(null);
   const [search, setSearch] = useState("");
   const filteredMenu = useMemo(() => {
   if (!search.trim()) {

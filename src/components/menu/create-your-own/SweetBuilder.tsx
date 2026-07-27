@@ -1,7 +1,7 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { menu } from "@/data/menu";
+import { useState } from "react";
+import { menu, type MenuProduct } from "@/data/menu";
 
 import BuilderSection from "./BuilderSection";
 import BuilderOption from "./BuilderOption";
@@ -11,55 +11,56 @@ type SweetBuilderProps = {
   onBack: () => void;
 };
 
+const createYourOwnMenu = menu.find(
+  (section) => section.id === "create-your-own"
+);
+
+const sweetGroups = (() => {
+  const groups = new Map<string, MenuProduct[]>();
+
+  createYourOwnMenu?.products
+    .filter(
+      (item) =>
+        ![
+          "Cheese",
+          "Meat",
+          "Vegetables",
+          "Sauces",
+          "Extras",
+        ].includes(item.description)
+    )
+    .forEach((item) => {
+      if (!groups.has(item.description)) {
+        groups.set(item.description, []);
+      }
+
+      groups.get(item.description)!.push(item);
+    });
+
+  return [...groups.entries()].map(([title, items]) => ({
+    title,
+    items,
+  }));
+})();
+
+const sweetBaseSection =
+  sweetGroups.find((group) => group.title === "Base") ?? null;
+const sweetOtherSections = sweetGroups.filter(
+  (group) => group.title !== "Base"
+);
+
+const limits: Record<string, number> = {
+  "Cream & Chocolate": 2,
+  "Fresh Fruit": 3,
+  "Fruit Filling": 2,
+  Topping: 4,
+  "Ice Cream": 2,
+  Sorbet: 1,
+};
+
 export default function SweetBuilder({
   onBack,
 }: SweetBuilderProps) {
-  const sweetMenu = useMemo(() => {
-    return menu.find(
-      (section) => section.id === "create-your-own"
-    );
-  }, []);
-
-  if (!sweetMenu) return null;
-
-  const groups = useMemo(() => {
-    const map = new Map<
-      string,
-      typeof sweetMenu.products
-    >();
-
-    sweetMenu.products
-      .filter(
-        (item) =>
-          ![
-            "Cheese",
-            "Meat",
-            "Vegetables",
-            "Sauces",
-            "Extras",
-          ].includes(item.description)
-      )
-      .forEach((item) => {
-        if (!map.has(item.description)) {
-          map.set(item.description, []);
-        }
-
-        map.get(item.description)!.push(item);
-      });
-
-    return [...map.entries()].map(([title, items]) => ({
-      title,
-      items,
-    }));
-  }, [sweetMenu]);
-
-  const baseSection =
-    groups.find((g) => g.title === "Base") || null;
-
-  const otherSections = groups.filter(
-    (g) => g.title !== "Base"
-  );
-
   const [openSection, setOpenSection] =
     useState("Base");
 
@@ -68,14 +69,7 @@ export default function SweetBuilder({
   const [selected, setSelected] =
     useState<string[]>([]);
 
-  const limits: Record<string, number> = {
-    "Cream & Chocolate": 2,
-    "Fresh Fruit": 3,
-    "Fruit Filling": 2,
-    Topping: 4,
-    "Ice Cream": 2,
-    Sorbet: 1,
-  };
+  if (!createYourOwnMenu) return null;
 
   const toggle = (
     sectionTitle: string,
@@ -91,7 +85,7 @@ export default function SweetBuilder({
       }
 
       const count =
-        otherSections
+        sweetOtherSections
           .find(
             (section) =>
               section.title === sectionTitle
@@ -107,12 +101,12 @@ export default function SweetBuilder({
       return [...prev, name];
     });
 
-    const currentIndex = otherSections.findIndex(
+    const currentIndex = sweetOtherSections.findIndex(
       (section) => section.title === sectionTitle
     );
 
     if (currentIndex !== -1) {
-      const next = otherSections[currentIndex + 1];
+      const next = sweetOtherSections[currentIndex + 1];
 
       if (next) {
         setOpenSection(next.title);
@@ -127,25 +121,21 @@ export default function SweetBuilder({
   };
 
   const baseItem =
-    baseSection?.items.find(
+    sweetBaseSection?.items.find(
       (item) => item.name === base
     ) || null;
 
-  const total = useMemo(() => {
-    let sum = baseItem?.price ?? 0;
+  let total = baseItem?.price ?? 0;
 
-    otherSections.forEach((section) => {
-      section.items.forEach((item) => {
-        if (selected.includes(item.name)) {
-          sum += item.price;
-        }
-      });
+  sweetOtherSections.forEach((section) => {
+    section.items.forEach((item) => {
+      if (selected.includes(item.name)) {
+        total += item.price;
+      }
     });
+  });
 
-    return sum;
-  }, [baseItem, selected, otherSections]);
-
-  const summary = otherSections
+  const summary = sweetOtherSections
     .map((section) => ({
       title: section.title,
       items: section.items
@@ -189,14 +179,14 @@ export default function SweetBuilder({
 
         <div className="space-y-6">
 
-          {baseSection && (
+          {sweetBaseSection && (
             <BuilderSection
               title="Base"
               subtitle="Choose one"
               open={openSection === "Base"}
               onToggle={() => setOpenSection("Base")}
             >
-              {baseSection.items.map((item) => (
+              {sweetBaseSection.items.map((item) => (
                 <BuilderOption
                   key={item.name}
                   name={item.name}
@@ -205,8 +195,8 @@ export default function SweetBuilder({
                   onClick={() => {
                     setBase(item.name);
 
-                    if (otherSections.length > 0) {
-                      setOpenSection(otherSections[0].title);
+                    if (sweetOtherSections.length > 0) {
+                      setOpenSection(sweetOtherSections[0].title);
                     }
                   }}
                 />
@@ -214,7 +204,7 @@ export default function SweetBuilder({
             </BuilderSection>
           )}
 
-          {otherSections.map((section) => {
+          {sweetOtherSections.map((section) => {
 
             const selectedCount = section.items.filter((item) =>
               selected.includes(item.name)

@@ -39,8 +39,8 @@ export default function Reservation() {
             </Heading>
 
             <p className="mx-auto mt-8 max-w-2xl text-lg leading-9 text-white/75">
-              Whether it's your morning coffee, weekend brunch
-              or an evening cocktail, we'll make sure your
+              Whether it&apos;s your morning coffee, weekend brunch
+              or an evening cocktail, we&apos;ll make sure your
               table is waiting.
             </p>
 

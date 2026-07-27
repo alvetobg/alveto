@@ -1,7 +1,7 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { menu } from "@/data/menu";
+import { useState } from "react";
+import { menu, type MenuProduct } from "@/data/menu";
 
 import BuilderSection from "./BuilderSection";
 import BuilderOption from "./BuilderOption";
@@ -11,63 +11,62 @@ type SavoryBuilderProps = {
   onBack: () => void;
 };
 
+const createYourOwnMenu = menu.find(
+  (section) => section.id === "create-your-own"
+);
+
+const savoryGroups = (() => {
+  const groups = new Map<string, MenuProduct[]>();
+
+  createYourOwnMenu?.products
+    .filter((item) =>
+      [
+        "Base",
+        "Cheese",
+        "Meat",
+        "Vegetables",
+        "Sauces",
+        "Extras",
+      ].includes(item.description)
+    )
+    .forEach((item) => {
+      if (!groups.has(item.description)) {
+        groups.set(item.description, []);
+      }
+
+      groups.get(item.description)!.push(item);
+    });
+
+  return [...groups.entries()].map(([title, items]) => ({
+    title,
+    items:
+      title === "Base"
+        ? items.filter(
+            (item) =>
+              item.name !== "Mini Pancakes" &&
+              item.name !== "American Pancakes"
+          )
+        : items,
+  }));
+})();
+
+const savoryBaseSection =
+  savoryGroups.find((group) => group.title === "Base") ?? null;
+const savoryOtherSections = savoryGroups.filter(
+  (group) => group.title !== "Base"
+);
+
+const limits: Record<string, number> = {
+  Cheese: 2,
+  Meat: 2,
+  Vegetables: 4,
+  Sauces: 2,
+  Extras: 2,
+};
+
 export default function SavoryBuilder({
   onBack,
 }: SavoryBuilderProps) {
-  const savoryMenu = useMemo(() => {
-    return menu.find(
-      (section) => section.id === "create-your-own"
-    );
-  }, []);
-
-  if (!savoryMenu) return null;
-
-  const groups = useMemo(() => {
-    const map = new Map<
-      string,
-      typeof savoryMenu.products
-    >();
-
-    savoryMenu.products
-      .filter((item) =>
-        [
-          "Base",
-          "Cheese",
-          "Meat",
-          "Vegetables",
-          "Sauces",
-          "Extras",
-        ].includes(item.description)
-      )
-      .forEach((item) => {
-        if (!map.has(item.description)) {
-          map.set(item.description, []);
-        }
-
-        map.get(item.description)!.push(item);
-      });
-
-    return [...map.entries()].map(([title, items]) => ({
-      title,
-      items,
-    }));
-  }, [savoryMenu]);
-
-  const baseSection =
-    groups.find((g) => g.title === "Base") || null;
-
-  if (baseSection) {
-    baseSection.items = baseSection.items.filter(
-      (item) =>
-        item.name !== "Mini Pancakes" &&
-        item.name !== "American Pancakes"
-    );
-  }
-
-  const otherSections = groups.filter(
-    (g) => g.title !== "Base"
-  );
-
   const [openSection, setOpenSection] =
     useState("Base");
 
@@ -76,13 +75,7 @@ export default function SavoryBuilder({
   const [selected, setSelected] =
     useState<string[]>([]);
 
-  const limits: Record<string, number> = {
-    Cheese: 2,
-    Meat: 2,
-    Vegetables: 4,
-    Sauces: 2,
-    Extras: 2,
-  };
+  if (!createYourOwnMenu) return null;
 
   const toggle = (
     sectionTitle: string,
@@ -98,7 +91,7 @@ export default function SavoryBuilder({
       }
 
       const count =
-        otherSections
+        savoryOtherSections
           .find(
             (section) =>
               section.title === sectionTitle
@@ -122,29 +115,21 @@ export default function SavoryBuilder({
   };
 
   const baseItem =
-    baseSection?.items.find(
+    savoryBaseSection?.items.find(
       (item) => item.name === base
     ) || null;
 
-  const total = useMemo(() => {
-    let sum = baseItem?.price ?? 0;
+  let total = baseItem?.price ?? 0;
 
-    otherSections.forEach((section) => {
-      section.items.forEach((item) => {
-        if (selected.includes(item.name)) {
-          sum += item.price;
-        }
-      });
+  savoryOtherSections.forEach((section) => {
+    section.items.forEach((item) => {
+      if (selected.includes(item.name)) {
+        total += item.price;
+      }
     });
+  });
 
-    return sum;
-  }, [
-    baseItem,
-    selected,
-    otherSections,
-  ]);
-
-  const summary = otherSections
+  const summary = savoryOtherSections
     .map((section) => ({
       title: section.title,
       items: section.items
@@ -170,14 +155,14 @@ export default function SavoryBuilder({
 
         <div className="space-y-6">
 
-          {baseSection && (
+          {savoryBaseSection && (
             <BuilderSection
               title="Base"
               subtitle="Choose one"
               open={openSection === "Base"}
               onToggle={() => setOpenSection("Base")}
             >
-              {baseSection.items.map((item) => (
+              {savoryBaseSection.items.map((item) => (
                 <BuilderOption
                   key={item.name}
                   name={item.name}
@@ -189,7 +174,7 @@ export default function SavoryBuilder({
             </BuilderSection>
           )}
 
-          {otherSections.map((section) => (
+          {savoryOtherSections.map((section) => (
             <BuilderSection
               key={section.title}
               title={section.title}

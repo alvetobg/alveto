@@ -32,7 +32,7 @@ export default function NotFound() {
         </h1>
 
         <p className="mx-auto mt-8 max-w-xl text-lg leading-8 text-text">
-          Don't worry — our coffee is still hot, our brunch is still fresh and
+          Don&apos;t worry — our coffee is still hot, our brunch is still fresh and
           our desserts are waiting for you.
         </p>
 

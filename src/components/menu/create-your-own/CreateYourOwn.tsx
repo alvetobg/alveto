@@ -30,7 +30,7 @@ if (builder === "savory") {
         </h2>
 
         <p className="mt-4 text-lg text-neutral-500">
-          Choose whether you'd like to build a sweet or savory creation.
+          Choose whether you&apos;d like to build a sweet or savory creation.
         </p>
 
       </div>
