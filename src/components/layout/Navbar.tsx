@@ -2,13 +2,17 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
+import MobileMenu from "@/components/layout/MobileMenu";
 import Button from "@/components/ui/Button";
 import { site } from "@/lib/site";
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  const closeMenu = useCallback(() => setMenuOpen(false), []);
 
   useEffect(() => {
     const onScroll = () => {
@@ -33,7 +37,7 @@ export default function Navbar() {
           : "bg-transparent"
       }`}
     >
-      <div className="mx-auto flex h-[88px] max-w-7xl items-center justify-between px-8 lg:h-24 lg:px-12 xl:px-16">
+      <div className="mx-auto flex h-[88px] max-w-7xl items-center justify-between px-6 md:px-8 lg:h-24 lg:px-12 xl:px-16">
         <Link
           href="/"
           aria-label="ALVETO Home"
@@ -52,10 +56,10 @@ export default function Navbar() {
 
         <nav
           aria-label="Main navigation"
-          className="flex items-center gap-6 lg:gap-8"
+          className="hidden items-center gap-6 md:flex lg:gap-8"
         >
-          <a
-            href="#experience"
+          <Link
+            href="/#experience"
             className={`text-[15px] font-semibold tracking-wide transition-colors duration-300 ${
               scrolled
                 ? "text-dark hover:text-primary"
@@ -63,7 +67,7 @@ export default function Navbar() {
             }`}
           >
             Experience
-          </a>
+          </Link>
 
           <Link
             href="/menu"
@@ -80,7 +84,29 @@ export default function Navbar() {
             Reserve
           </Button>
         </nav>
+
+        <button
+          type="button"
+          aria-label="Open navigation menu"
+          aria-controls="mobile-navigation"
+          aria-expanded={menuOpen}
+          onClick={() => setMenuOpen(true)}
+          className={`flex h-12 w-12 items-center justify-center rounded-2xl border transition-colors duration-300 md:hidden ${
+            scrolled
+              ? "border-black/10 bg-white/80 text-dark"
+              : "border-white/25 bg-black/10 text-white backdrop-blur-sm"
+          }`}
+        >
+          <span className="sr-only">Open menu</span>
+          <span aria-hidden="true" className="flex w-5 flex-col gap-1.5">
+            <span className="h-0.5 w-full rounded-full bg-current" />
+            <span className="h-0.5 w-full rounded-full bg-current" />
+            <span className="h-0.5 w-full rounded-full bg-current" />
+          </span>
+        </button>
       </div>
+
+      <MobileMenu open={menuOpen} onClose={closeMenu} />
     </header>
   );
 }
