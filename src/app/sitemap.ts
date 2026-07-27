@@ -1,13 +1,14 @@
 import type { MetadataRoute } from "next";
+import { site } from "@/lib/site";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   return [
     {
-      url: "https://alveto-bg.com",
+      url: `${site.domain}/`,
       priority: 1,
     },
     {
-      url: "https://alveto-bg.com/menu",
+      url: `${site.domain}/menu`,
       priority: 0.9,
     },
   ];

@@ -4,17 +4,14 @@ export default function StructuredData() {
   const data = {
     "@context": "https://schema.org",
     "@type": "CafeOrCoffeeShop",
-
+    "@id": `${site.domain}/#business`,
     name: site.name,
-
-    image: "https://alveto-bg.com/images/hero.jpg",
-
-    url: "https://alveto-bg.com",
-
+    description: site.seo.description,
+    image: `${site.domain}/images/hero.jpg`,
+    url: site.domain,
+    menu: `${site.domain}/menu`,
     telephone: site.phone,
-
     email: site.email,
-
     servesCuisine: [
       "Breakfast",
       "Brunch",
@@ -22,23 +19,12 @@ export default function StructuredData() {
       "Coffee",
       "Cocktails",
     ],
-
-    priceRange: "$$",
-
     address: {
       "@type": "PostalAddress",
-      streetAddress: "Sokolska 4",
-      addressLocality: "Belgrade",
-      postalCode: "",
-      addressCountry: "RS",
+      streetAddress: site.address.street,
+      addressLocality: site.address.city,
+      addressCountry: site.address.countryCode,
     },
-
-    geo: {
-      "@type": "GeoCoordinates",
-      latitude: "",
-      longitude: "",
-    },
-
     openingHoursSpecification: [
       {
         "@type": "OpeningHoursSpecification",
@@ -51,22 +37,21 @@ export default function StructuredData() {
           "Saturday",
           "Sunday",
         ],
-        opens: "09:00",
-        closes: "00:00",
+        opens: site.hours.opens,
+        closes: site.hours.closes,
       },
     ],
-
-    sameAs: [
-      site.instagram,
-      site.maps,
-    ],
+    hasMap: site.maps,
+    sameAs: [site.instagram],
   };
+
+  const serializedData = JSON.stringify(data).replace(/</g, "\\u003c");
 
   return (
     <script
       type="application/ld+json"
       dangerouslySetInnerHTML={{
-        __html: JSON.stringify(data),
+        __html: serializedData,
       }}
     />
   );

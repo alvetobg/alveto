@@ -2,7 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Manrope } from "next/font/google";
 
 import "./globals.css";
-import StructuredData from "@/components/seo/StructuredData";
+import { site } from "@/lib/site";
 
 const manrope = Manrope({
   subsets: ["latin"],
@@ -16,30 +16,16 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://alveto-bg.com"),
+  metadataBase: new URL(site.domain),
 
   title: {
-    default: "ALVETO | Coffee • Brunch • Desserts",
+    default: site.seo.title,
     template: "%s | ALVETO",
   },
 
-  description:
-    "Premium specialty coffee, brunch, desserts and cocktails in the heart of Belgrade.",
+  description: site.seo.description,
 
-  keywords: [
-    "Alveto",
-    "Coffee",
-    "Specialty Coffee",
-    "Brunch",
-    "Breakfast",
-    "Desserts",
-    "Waffles",
-    "Pancakes",
-    "Crepes",
-    "Cocktails",
-    "Belgrade",
-    "Vračar",
-  ],
+  keywords: site.seo.keywords,
 
   authors: [
     {
@@ -56,22 +42,6 @@ export const metadata: Metadata = {
 
   referrer: "origin-when-cross-origin",
 
-  alternates: {
-    canonical: "https://alveto-bg.com",
-  },
-
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: {
-      index: true,
-      follow: true,
-      "max-image-preview": "large",
-      "max-snippet": -1,
-      "max-video-preview": -1,
-    },
-  },
-
   formatDetection: {
     email: false,
     address: false,
@@ -84,49 +54,7 @@ export const metadata: Metadata = {
     title: "ALVETO",
   },
 
-  openGraph: {
-    type: "website",
-    locale: "en_US",
-    url: "https://alveto-bg.com",
-    siteName: "ALVETO",
-    title: "ALVETO | Coffee • Brunch • Desserts",
-    description:
-      "Premium specialty coffee, brunch, desserts and cocktails in the heart of Belgrade.",
-    images: [
-      {
-        url: "/images/hero.jpg",
-        width: 1600,
-        height: 900,
-        alt: "ALVETO Coffee • Brunch • Desserts",
-      },
-    ],
-  },
-
-  twitter: {
-    card: "summary_large_image",
-    title: "ALVETO | Coffee • Brunch • Desserts",
-    description:
-      "Premium specialty coffee, brunch, desserts and cocktails in the heart of Belgrade.",
-    images: ["/images/hero.jpg"],
-  },
-
-  verification: {
-    google: "",
-  },
-
-  icons: {
-    icon: [
-      {
-        url: "/favicon.ico",
-      },
-    ],
-    apple: [
-      {
-        url: "/favicon.ico",
-      },
-    ],
-    shortcut: "/favicon.ico",
-  },
+  manifest: "/manifest.webmanifest",
 };
 
 export default function RootLayout({
@@ -147,8 +75,6 @@ export default function RootLayout({
         >
           Skip to content
         </a>
-
-        <StructuredData />
 
         {children}
       </body>

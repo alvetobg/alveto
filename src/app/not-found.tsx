@@ -1,5 +1,11 @@
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+
+export const metadata: Metadata = {
+  title: "Page Not Found",
+  description: "The requested ALVETO page could not be found.",
+};
 
 export default function NotFound() {
   return (
