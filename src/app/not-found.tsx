@@ -3,7 +3,11 @@ import Link from "next/link";
 
 export default function NotFound() {
   return (
-    <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[#F7F4EF] px-6">
+    <main
+      id="main-content"
+      tabIndex={-1}
+      className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[#F7F4EF] px-6 focus:outline-none"
+    >
       {/* Background */}
       <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
         <span className="select-none text-[12rem] opacity-[0.06] md:text-[18rem] xl:text-[24rem]">
@@ -39,7 +43,7 @@ export default function NotFound() {
         <div className="mt-12 flex justify-center">
           <Link
             href="/"
-            className="inline-flex items-center rounded-full bg-primary px-8 py-4 text-sm font-semibold tracking-wide text-white transition-all duration-300 hover:-translate-y-1 hover:bg-primary-hover hover:shadow-xl"
+            className="inline-flex items-center rounded-full bg-primary px-8 py-4 text-sm font-semibold tracking-wide text-white transition-all duration-300 hover:-translate-y-1 hover:bg-primary-hover hover:shadow-xl motion-reduce:transform-none motion-reduce:transition-none"
           >
             ← Back Home
           </Link>

@@ -10,11 +10,13 @@ export default function Home() {
   return (
     <>
       <Navbar />
-      <Hero />
-      <Experience />
-      <Signature />
-      <About />
-      <Reservation />
+      <main id="main-content" tabIndex={-1} className="focus:outline-none">
+        <Hero />
+        <Experience />
+        <Signature />
+        <About />
+        <Reservation />
+      </main>
       <Footer />
     </>
   );

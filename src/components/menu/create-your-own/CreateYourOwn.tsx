@@ -25,9 +25,9 @@ if (builder === "savory") {
           ALVETO
         </p>
 
-        <h2 className="text-5xl font-bold">
+        <h3 className="text-5xl font-bold">
           Create Your Own
-        </h2>
+        </h3>
 
         <p className="mt-4 text-lg text-neutral-500">
           Choose whether you&apos;d like to build a sweet or savory creation.
@@ -38,14 +38,15 @@ if (builder === "savory") {
       <div className="grid gap-8 md:grid-cols-2">
 
         <button
+          type="button"
           onClick={() => setBuilder("sweet")}
-          className="group rounded-[36px] border border-neutral-200 bg-white p-12 text-left shadow-lg transition hover:-translate-y-2 hover:border-primary hover:shadow-2xl"
+          className="group rounded-[36px] border border-neutral-200 bg-white p-12 text-left shadow-lg transition hover:-translate-y-2 hover:border-primary hover:shadow-2xl motion-reduce:transform-none motion-reduce:transition-none"
         >
           <div className="text-6xl">🍓</div>
 
-          <h3 className="mt-8 text-3xl font-bold">
+          <h4 className="mt-8 text-3xl font-bold">
             Sweet Builder
-          </h3>
+          </h4>
 
           <p className="mt-4 text-neutral-500">
             Waffles, crepes, pancakes, chocolates, fruit, toppings,
@@ -54,14 +55,15 @@ if (builder === "savory") {
         </button>
 
         <button
+          type="button"
           onClick={() => setBuilder("savory")}
-          className="group rounded-[36px] border border-neutral-200 bg-white p-12 text-left shadow-lg transition hover:-translate-y-2 hover:border-primary hover:shadow-2xl"
+          className="group rounded-[36px] border border-neutral-200 bg-white p-12 text-left shadow-lg transition hover:-translate-y-2 hover:border-primary hover:shadow-2xl motion-reduce:transform-none motion-reduce:transition-none"
         >
           <div className="text-6xl">🥓</div>
 
-          <h3 className="mt-8 text-3xl font-bold">
+          <h4 className="mt-8 text-3xl font-bold">
             Savory Builder
-          </h3>
+          </h4>
 
           <p className="mt-4 text-neutral-500">
             Cheese, meat, vegetables, sauces, eggs and premium savory ingredients.

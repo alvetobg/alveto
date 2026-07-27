@@ -155,6 +155,7 @@ export default function SweetBuilder({
       <div className="flex flex-wrap items-center justify-between gap-4">
 
         <button
+          type="button"
           onClick={onBack}
           className="rounded-2xl border border-neutral-300 bg-white px-6 py-3 font-semibold transition hover:bg-neutral-100"
         >
@@ -162,9 +163,9 @@ export default function SweetBuilder({
         </button>
 
         <div>
-          <h1 className="text-3xl font-bold">
+          <h3 className="text-3xl font-bold">
             🍓 Sweet Builder
-          </h1>
+          </h3>
 
           <p className="mt-1 text-neutral-500">
             Build your perfect dessert.

@@ -7,8 +7,10 @@ export default function MenuPage() {
   return (
     <>
       <Navbar />
-      <MenuHero />
-      <MenuSection />
+      <main id="main-content" tabIndex={-1} className="focus:outline-none">
+        <MenuHero />
+        <MenuSection />
+      </main>
       <Footer />
     </>
   );

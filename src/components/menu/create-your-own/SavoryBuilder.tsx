@@ -141,10 +141,12 @@ export default function SavoryBuilder({
     .filter(
       (section) => section.items.length > 0
     );
-      return (
+  return (
     <section className="space-y-10">
+      <h3 className="sr-only">Savory Builder</h3>
 
       <button
+        type="button"
         onClick={onBack}
         className="rounded-2xl border px-6 py-3 font-semibold transition hover:bg-neutral-100"
       >

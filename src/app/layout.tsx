@@ -141,6 +141,13 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <body className="min-h-screen bg-background font-sans text-foreground antialiased">
+        <a
+          href="#main-content"
+          className="fixed left-4 top-4 z-[200] -translate-y-24 rounded-xl bg-dark px-5 py-3 font-semibold text-white opacity-0 shadow-xl transition focus:translate-y-0 focus:opacity-100"
+        >
+          Skip to content
+        </a>
+
         <StructuredData />
 
         {children}

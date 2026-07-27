@@ -25,6 +25,7 @@ export default function SummaryCard({
   total,
   onReset,
 }: SummaryCardProps) {
+  const summaryTitleId = useId();
   const feedbackId = useId();
   const [copyFeedback, setCopyFeedback] = useState<CopyFeedback | null>(null);
   const ingredientCount = sections.reduce(
@@ -66,7 +67,10 @@ export default function SummaryCard({
   };
 
   return (
-    <aside className="overflow-hidden rounded-[36px] border border-neutral-200 bg-white shadow-[0_20px_60px_rgba(0,0,0,0.08)]">
+    <aside
+      aria-labelledby={summaryTitleId}
+      className="overflow-hidden rounded-[36px] border border-neutral-200 bg-white shadow-[0_20px_60px_rgba(0,0,0,0.08)]"
+    >
       {/* Header */}
 
       <div className="border-b border-neutral-200 bg-gradient-to-r from-primary to-[#d79b5c] p-8 text-white">
@@ -74,9 +78,9 @@ export default function SummaryCard({
           CREATE YOUR OWN
         </p>
 
-        <h2 className="mt-3 text-3xl font-bold">
+        <h4 id={summaryTitleId} className="mt-3 text-3xl font-bold">
           {title}
-        </h2>
+        </h4>
 
         <div className="mt-8 flex items-end justify-between">
           <div>

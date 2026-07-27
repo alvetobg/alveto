@@ -31,7 +31,7 @@ export default function MenuItem({
           onClick?.();
         }
       }}
-      className="group cursor-pointer overflow-hidden rounded-[32px] border border-black/5 bg-white shadow-[0_10px_35px_rgba(0,0,0,0.05)] transition-all duration-500 hover:-translate-y-1 hover:border-primary/10 hover:shadow-[0_25px_60px_rgba(0,0,0,0.12)] focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
+      className="group cursor-pointer overflow-hidden rounded-[32px] border border-black/5 bg-white shadow-[0_10px_35px_rgba(0,0,0,0.05)] transition-all duration-500 hover:-translate-y-1 hover:border-primary/10 hover:shadow-[0_25px_60px_rgba(0,0,0,0.12)] focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 motion-reduce:transform-none motion-reduce:transition-none"
     >
       <div className="flex flex-col overflow-hidden md:flex-row">
         {hasImage && (
@@ -42,7 +42,7 @@ export default function MenuItem({
               fill
               quality={90}
               sizes="(max-width:768px) 100vw, 288px"
-              className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+              className="object-cover transition-transform duration-700 ease-out group-hover:scale-105 motion-reduce:transform-none motion-reduce:transition-none"
             />
 
             <div className="absolute inset-0 bg-gradient-to-t from-black/25 via-transparent to-transparent" />
@@ -77,11 +77,11 @@ export default function MenuItem({
               </p>
             </div>
 
-            <div className="flex items-center gap-2 text-sm font-semibold text-primary transition-all duration-300 group-hover:translate-x-1">
+            <div className="flex items-center gap-2 text-sm font-semibold text-primary transition-all duration-300 group-hover:translate-x-1 motion-reduce:transform-none motion-reduce:transition-none">
               <span>View Details</span>
 
               <svg
-                className="h-5 w-5 transition-transform duration-300 group-hover:translate-x-1"
+                className="h-5 w-5 transition-transform duration-300 group-hover:translate-x-1 motion-reduce:transform-none motion-reduce:transition-none"
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"

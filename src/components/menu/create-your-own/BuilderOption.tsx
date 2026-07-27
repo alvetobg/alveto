@@ -17,9 +17,10 @@ export default function BuilderOption({
 }: BuilderOptionProps) {
   return (
     <button
+      type="button"
       disabled={disabled}
       onClick={onClick}
-      className={`group flex w-full items-center justify-between rounded-2xl border p-5 transition-all duration-300 ${
+      className={`group flex w-full items-center justify-between rounded-2xl border p-5 transition-all duration-300 motion-reduce:transform-none motion-reduce:transition-none ${
         disabled
           ? "cursor-not-allowed border-neutral-200 bg-neutral-100 opacity-40"
           : selected
@@ -39,13 +40,13 @@ export default function BuilderOption({
         </div>
 
         <div>
-          <h3
+          <h5
             className={`text-left text-base font-semibold ${
               selected ? "text-primary" : "text-dark"
             }`}
           >
             {name}
-          </h3>
+          </h5>
 
           <p className="mt-1 text-sm text-neutral-500">
             Premium ingredient

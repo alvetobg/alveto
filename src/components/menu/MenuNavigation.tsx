@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 
 type MenuNavigationProps = {
   categories: {
@@ -9,11 +9,18 @@ type MenuNavigationProps = {
   }[];
 };
 
+const getScrollBehavior = (): ScrollBehavior =>
+  window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    ? "auto"
+    : "smooth";
+
 export default function MenuNavigation({
   categories,
 }: MenuNavigationProps) {
   const [active, setActive] = useState(categories[0]?.id);
-  const containerRef = useRef<HTMLDivElement>(null);
+  const activeCategory = categories.some((category) => category.id === active)
+    ? active
+    : categories[0]?.id;
 
   useEffect(() => {
     const sections = document.querySelectorAll("[data-category]");
@@ -28,7 +35,7 @@ export default function MenuNavigation({
           document
             .getElementById(`menu-nav-${entry.target.id}`)
             ?.scrollIntoView({
-              behavior: "smooth",
+              behavior: getScrollBehavior(),
               inline: "center",
               block: "nearest",
             });
@@ -43,27 +50,28 @@ export default function MenuNavigation({
     sections.forEach((section) => observer.observe(section));
 
     return () => observer.disconnect();
-  }, []);
+  }, [categories]);
 
   return (
-    <div className="sticky top-28 z-40 mb-10">
+    <nav aria-label="Menu categories" className="sticky top-28 z-40 mb-10">
       <div className="rounded-full border border-black/5 bg-white/90 shadow-xl backdrop-blur-xl">
-        <div
-          ref={containerRef}
-          className="hide-scrollbar flex overflow-x-auto px-2 py-2"
-        >
+        <div className="hide-scrollbar flex overflow-x-auto px-2 py-2">
           {categories.map((category) => (
             <button
+              type="button"
               key={category.id}
               id={`menu-nav-${category.id}`}
+              aria-current={
+                activeCategory === category.id ? "location" : undefined
+              }
               onClick={() => {
                 document.getElementById(category.id)?.scrollIntoView({
-                  behavior: "smooth",
+                  behavior: getScrollBehavior(),
                   block: "start",
                 });
               }}
               className={`flex-shrink-0 whitespace-nowrap rounded-full px-5 py-3 text-xs font-semibold transition-all duration-300 md:px-6 md:text-sm ${
-                active === category.id
+                activeCategory === category.id
                   ? "bg-primary text-white shadow-lg"
                   : "text-neutral-600 hover:bg-neutral-100 hover:text-dark"
               }`}
@@ -73,6 +81,6 @@ export default function MenuNavigation({
           ))}
         </div>
       </div>
-    </div>
+    </nav>
   );
 }

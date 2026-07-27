@@ -23,14 +23,16 @@ export default function BuilderSection({
     <section className="overflow-hidden rounded-[28px] border border-neutral-200 bg-white shadow-sm">
 
       <button
+        type="button"
+        aria-expanded={open}
         onClick={onToggle}
         className="flex w-full items-center justify-between p-7 text-left transition hover:bg-neutral-50"
       >
         <div>
 
-          <h2 className="text-2xl font-bold">
+          <h4 className="text-2xl font-bold">
             {title}
-          </h2>
+          </h4>
 
           {subtitle && (
             <p className="mt-1 text-sm text-neutral-500">
@@ -49,7 +51,8 @@ export default function BuilderSection({
           )}
 
           <span
-            className={`text-3xl transition-transform duration-300 ${
+            aria-hidden="true"
+            className={`text-3xl transition-transform duration-300 motion-reduce:transition-none ${
               open ? "rotate-180" : ""
             }`}
           >
