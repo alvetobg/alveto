@@ -4,6 +4,7 @@ import { unstable_cache } from "next/cache";
 
 import { createPublishedMenuRepository } from "@/features/menu/repository";
 import type { PublishedMenuResult } from "@/features/menu/types";
+import { publicCacheTags } from "@/lib/cache/tags";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 type DiagnosticValue = string | number | boolean | null;
@@ -47,10 +48,9 @@ const getCachedPublishedMenu = unstable_cache(
 
     return repository.list();
   },
-  ["alveto-public-menu"],
+  [publicCacheTags.publicMenu],
   {
-    revalidate: 300,
-    tags: ["alveto-public-menu"],
+    tags: [publicCacheTags.publicMenu],
   },
 );
 

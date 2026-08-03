@@ -4,27 +4,32 @@ import FadeIn from "@/components/animations/FadeIn";
 import Container from "@/components/ui/Container";
 import Heading from "@/components/ui/Heading";
 import Section from "@/components/ui/Section";
-import type {
-  MenuProduct,
-  PublishedMenuResult,
-} from "@/features/menu/types";
+import type { PublishedHomepageResult } from "@/features/homepage/types";
+import type { MenuProduct } from "@/features/menu/types";
 import { getOptionalImageSource } from "@/lib/images";
 
 type SignatureProps = Readonly<{
+  eyebrow: string;
+  title: string;
   products: readonly MenuProduct[];
-  state: PublishedMenuResult["state"];
+  state: PublishedHomepageResult["state"];
 }>;
 
-export default function Signature({ products, state }: SignatureProps) {
+export default function Signature({
+  eyebrow,
+  title,
+  products,
+  state,
+}: SignatureProps) {
   return (
     <Section id="signature" className="bg-cream">
       <Container>
         <p className="text-center uppercase tracking-[6px] text-primary">
-          SIGNATURE COLLECTION
+          {eyebrow}
         </p>
 
         <div className="mt-4">
-          <Heading>Our Favorites</Heading>
+          <Heading>{title}</Heading>
         </div>
 
         {products.length > 0 ? (

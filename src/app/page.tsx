@@ -8,8 +8,7 @@ import Navbar from "@/components/layout/Navbar";
 import Hero from "@/components/home/Hero";
 import Experience from "@/components/home/Experience";
 import StructuredData from "@/components/seo/StructuredData";
-import { selectSignatureProducts } from "@/features/menu/presentation";
-import { getPublishedMenu } from "@/features/menu/service";
+import { getPublishedHomepage } from "@/features/homepage/service";
 import { site } from "@/lib/site";
 
 export const dynamic = "force-dynamic";
@@ -61,17 +60,27 @@ export const metadata: Metadata = {
 };
 
 export default async function Home() {
-  const menuResult = await getPublishedMenu();
-  const signatureProducts = selectSignatureProducts(menuResult.menu);
+  const homepageResult = await getPublishedHomepage();
+  const featuredSection = homepageResult.content?.featuredSection;
 
   return (
     <>
       <StructuredData />
       <Navbar />
       <main id="main-content" tabIndex={-1} className="focus:outline-none">
-        <Hero />
+        <Hero
+          content={homepageResult.content?.hero ?? null}
+          state={homepageResult.state}
+        />
         <Experience />
-        <Signature products={signatureProducts} state={menuResult.state} />
+        {featuredSection ? (
+          <Signature
+            eyebrow={featuredSection.eyebrow}
+            title={featuredSection.title}
+            products={featuredSection.products}
+            state={homepageResult.state}
+          />
+        ) : null}
         <About />
         <Reservation />
       </main>

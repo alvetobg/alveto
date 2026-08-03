@@ -1,5 +1,3 @@
-import type { MenuCategory, MenuProduct } from "@/features/menu/types";
-
 const categoryHeroImages: Readonly<Record<string, string>> = {
   breakfast: "/images/menu-hero.webp",
   "sweet-selection": "/images/categories/sweet.webp",
@@ -55,40 +53,10 @@ const productImageFallbacks: Readonly<Record<string, string>> = {
     "/images/menu/breakfast/avo-prosciutto-toast.webp",
 };
 
-const signatureProductSlugs = [
-  "dubai-pistachio",
-  "waffle-benedict",
-  "espresso-martini",
-] as const;
-
 export function getCategoryHeroImage(slug: string) {
   return categoryHeroImages[slug];
 }
 
 export function getProductImageFallback(slug: string) {
   return productImageFallbacks[slug];
-}
-
-export function selectSignatureProducts(
-  menu: readonly MenuCategory[],
-): readonly MenuProduct[] {
-  const products = menu.flatMap((category) =>
-    category.kind === "products" ? category.products : [],
-  );
-  const productsBySlug = new Map(
-    products.map((product) => [product.slug, product]),
-  );
-  const prioritizedProducts = signatureProductSlugs.flatMap((slug) => {
-    const product = productsBySlug.get(slug);
-    return product ? [product] : [];
-  });
-  const prioritizedIds = new Set(
-    prioritizedProducts.map((product) => product.id),
-  );
-
-  return [
-    ...prioritizedProducts,
-    ...products.filter((product) => !prioritizedIds.has(product.id)),
-  ]
-    .slice(0, 3);
 }

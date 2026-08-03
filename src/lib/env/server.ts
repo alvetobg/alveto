@@ -3,6 +3,7 @@ import "server-only";
 type ServerEnvironment = Readonly<{
   supabaseUrl: string;
   supabasePublishableKey: string;
+  revalidateSecret: string;
 }>;
 
 const localHostnames = new Set(["localhost", "127.0.0.1", "::1"]);
@@ -40,12 +41,21 @@ export function getServerEnvironment(): ServerEnvironment {
   const supabaseUrl = getValidatedSupabaseUrl(process.env.SUPABASE_URL);
   const supabasePublishableKey =
     process.env.SUPABASE_PUBLISHABLE_KEY?.trim();
+  const revalidateSecret = process.env.REVALIDATE_SECRET?.trim();
   const invalidVariables = [
     ...(!supabaseUrl ? ["SUPABASE_URL"] : []),
     ...(!supabasePublishableKey ? ["SUPABASE_PUBLISHABLE_KEY"] : []),
+    ...(!revalidateSecret || revalidateSecret.length < 32
+      ? ["REVALIDATE_SECRET"]
+      : []),
   ];
 
-  if (!supabaseUrl || !supabasePublishableKey) {
+  if (
+    !supabaseUrl ||
+    !supabasePublishableKey ||
+    !revalidateSecret ||
+    revalidateSecret.length < 32
+  ) {
     throw new Error(
       `Invalid server environment configuration: ${invalidVariables.join(", ")}`,
     );
@@ -54,5 +64,6 @@ export function getServerEnvironment(): ServerEnvironment {
   return {
     supabaseUrl,
     supabasePublishableKey,
+    revalidateSecret,
   };
 }

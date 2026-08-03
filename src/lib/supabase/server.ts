@@ -6,6 +6,9 @@ import type { Database } from "@/lib/supabase/database.types";
 type PublishedMenuRpcRow =
   Database["public"]["Functions"]["get_alveto_published_menu"]["Returns"][number];
 
+type PublishedHomepageRpcRow =
+  Database["public"]["Functions"]["get_alveto_published_homepage"]["Returns"][number];
+
 type SignedImage = Readonly<{
   path: string;
   signedUrl: string;
@@ -17,7 +20,10 @@ type StorageSignedUrlPayload = Readonly<{
 
 export class SupabaseServerClientError extends Error {
   constructor(
-    readonly operation: "published-menu" | "sign-images",
+    readonly operation:
+      | "published-homepage"
+      | "published-menu"
+      | "sign-images",
     readonly status?: number,
   ) {
     super("The server content request failed.");
@@ -54,6 +60,31 @@ export function createSupabaseServerClient() {
   const headers = createHeaders(environment.supabasePublishableKey);
 
   return {
+    async getPublishedHomepageRows(): Promise<PublishedHomepageRpcRow[]> {
+      const requestUrl = new URL(
+        "/rest/v1/rpc/get_alveto_published_homepage",
+        environment.supabaseUrl,
+      );
+      const requestHeaders = new Headers(headers);
+      requestHeaders.set("Content-Type", "application/json");
+
+      const payload = await parseJson(
+        await fetch(requestUrl, {
+          method: "POST",
+          headers: requestHeaders,
+          body: "{}",
+          cache: "no-store",
+        }),
+        "published-homepage",
+      );
+
+      if (!Array.isArray(payload)) {
+        throw new SupabaseServerClientError("published-homepage");
+      }
+
+      return payload as PublishedHomepageRpcRow[];
+    },
+
     async getPublishedMenuRows(): Promise<PublishedMenuRpcRow[]> {
       const requestUrl = new URL(
         "/rest/v1/rpc/get_alveto_published_menu",

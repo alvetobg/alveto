@@ -3,21 +3,32 @@
 import Image from "next/image";
 import FadeIn from "@/components/ui/FadeIn";
 import Button from "@/components/ui/Button";
+import type {
+  HomepageHero,
+  PublishedHomepageResult,
+} from "@/features/homepage/types";
 
-export default function Hero() {
+type HeroProps = Readonly<{
+  content: HomepageHero | null;
+  state: PublishedHomepageResult["state"];
+}>;
+
+export default function Hero({ content, state }: HeroProps) {
   return (
-    <section className="relative isolate flex min-h-[88svh] items-center overflow-hidden md:min-h-screen">
+    <section className="relative isolate flex min-h-[88svh] items-center overflow-hidden bg-dark md:min-h-screen">
       {/* Background */}
 
-      <Image
-        src="/images/hero.jpg"
-        alt="Alveto"
-        fill
-        priority
-        quality={85}
-        sizes="100vw"
-        className="object-cover object-center scale-[1.02]"
-      />
+      {content ? (
+        <Image
+          src={content.imagePath}
+          alt="Alveto"
+          fill
+          priority
+          quality={85}
+          sizes="100vw"
+          className="object-cover object-center scale-[1.02]"
+        />
+      ) : null}
 
       {/* Overlay */}
 
@@ -44,29 +55,40 @@ export default function Hero() {
           </p>
         </FadeIn>
 
-        <FadeIn delay={0.2}>
-          <h1 className="max-w-4xl text-4xl font-extrabold leading-[0.95] tracking-[-0.04em] text-white sm:text-5xl md:text-7xl xl:text-[7.5rem]">
-            Every Moment
-            <br />
-            Has a Flavor.
-          </h1>
-        </FadeIn>
+        {content ? (
+          <>
+            <FadeIn delay={0.2}>
+              <h1 className="max-w-4xl whitespace-pre-line text-4xl font-extrabold leading-[0.95] tracking-[-0.04em] text-white sm:text-5xl md:text-7xl xl:text-[7.5rem]">
+                {content.title}
+              </h1>
+            </FadeIn>
 
-        <FadeIn delay={0.35}>
-          <p className="mt-6 max-w-xl text-[15px] leading-7 text-white/85 md:mt-12 md:max-w-2xl md:text-xl md:leading-9">
-            A place where specialty coffee, beautiful food and slow moments
-            come together.
-          </p>
-        </FadeIn>
+            <FadeIn delay={0.35}>
+              <p className="mt-6 max-w-xl text-[15px] leading-7 text-white/85 md:mt-12 md:max-w-2xl md:text-xl md:leading-9">
+                {content.subtitle}
+              </p>
+            </FadeIn>
+          </>
+        ) : (
+          <FadeIn delay={0.2}>
+            <p className="mt-6 max-w-xl text-[15px] leading-7 text-white/85 md:mt-12 md:max-w-2xl md:text-xl md:leading-9">
+              {state === "error"
+                ? "Homepage content is temporarily unavailable."
+                : "New homepage content is coming soon."}
+            </p>
+          </FadeIn>
+        )}
 
         <FadeIn delay={0.5}>
           <div className="mt-10 flex w-full max-w-sm gap-3 md:mt-20 md:max-w-none md:w-auto md:gap-4">
-            <Button
-              href="#signature"
-              className="flex-1 md:w-auto"
-            >
-              Explore Menu
-            </Button>
+            {content ? (
+              <Button
+                href={content.buttonUrl}
+                className="flex-1 md:w-auto"
+              >
+                {content.buttonLabel}
+              </Button>
+            ) : null}
 
             <Button
               href="#reservation"

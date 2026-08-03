@@ -1,4 +1,4 @@
-﻿export type Json =
+export type Json =
   | string
   | number
   | boolean
@@ -11,6 +11,31 @@ export type Database = {
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
     PostgrestVersion: "14.15"
+  }
+  graphql_public: {
+    Tables: {
+      [_ in never]: never
+    }
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      graphql: {
+        Args: {
+          extensions?: Json
+          operationName?: string
+          query?: string
+          variables?: Json
+        }
+        Returns: Json
+      }
+    }
+    Enums: {
+      [_ in never]: never
+    }
+    CompositeTypes: {
+      [_ in never]: never
+    }
   }
   public: {
     Tables: {
@@ -56,6 +81,149 @@ export type Database = {
             foreignKeyName: "categories_organization_id_fkey"
             columns: ["organization_id"]
             isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      homepage_featured_products: {
+        Row: {
+          created_at: string
+          display_order: number
+          id: string
+          organization_id: string
+          product_id: string
+          section_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          display_order?: number
+          id?: string
+          organization_id: string
+          product_id: string
+          section_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          display_order?: number
+          id?: string
+          organization_id?: string
+          product_id?: string
+          section_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "homepage_featured_products_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "homepage_featured_products_product_tenant_fkey"
+            columns: ["organization_id", "product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["organization_id", "id"]
+          },
+          {
+            foreignKeyName: "homepage_featured_products_section_tenant_fkey"
+            columns: ["organization_id", "section_id"]
+            isOneToOne: false
+            referencedRelation: "homepage_sections"
+            referencedColumns: ["organization_id", "id"]
+          },
+        ]
+      }
+      homepage_sections: {
+        Row: {
+          created_at: string
+          display_order: number
+          eyebrow: string
+          id: string
+          is_active: boolean
+          organization_id: string
+          section_key: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          display_order?: number
+          eyebrow: string
+          id?: string
+          is_active?: boolean
+          organization_id: string
+          section_key: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          display_order?: number
+          eyebrow?: string
+          id?: string
+          is_active?: boolean
+          organization_id?: string
+          section_key?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "homepage_sections_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      homepage_settings: {
+        Row: {
+          created_at: string
+          hero_button_label: string
+          hero_button_url: string
+          hero_image_path: string
+          hero_subtitle: string
+          hero_title: string
+          id: string
+          is_active: boolean
+          organization_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          hero_button_label: string
+          hero_button_url: string
+          hero_image_path: string
+          hero_subtitle: string
+          hero_title: string
+          id?: string
+          is_active?: boolean
+          organization_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          hero_button_label?: string
+          hero_button_url?: string
+          hero_image_path?: string
+          hero_subtitle?: string
+          hero_title?: string
+          id?: string
+          is_active?: boolean
+          organization_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "homepage_settings_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: true
             referencedRelation: "organizations"
             referencedColumns: ["id"]
           },
@@ -499,6 +667,27 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_alveto_published_homepage: {
+        Args: never
+        Returns: {
+          featured_product_base_price_minor: number
+          featured_product_description: string
+          featured_product_display_order: number
+          featured_product_id: string
+          featured_product_name: string
+          featured_product_slug: string
+          featured_section_display_order: number
+          featured_section_eyebrow: string
+          featured_section_title: string
+          hero_button_label: string
+          hero_button_url: string
+          hero_image_path: string
+          hero_subtitle: string
+          hero_title: string
+          image_alt_text: string
+          image_storage_path: string
+        }[]
+      }
       get_alveto_published_menu: {
         Args: never
         Returns: {
@@ -560,6 +749,23 @@ export type Database = {
           organization_name: string
           organization_slug: string
         }[]
+      }
+      save_homepage_content: {
+        Args: {
+          target_featured_display_order: number
+          target_featured_eyebrow: string
+          target_featured_is_active: boolean
+          target_featured_product_ids?: string[]
+          target_featured_title: string
+          target_hero_button_label: string
+          target_hero_button_url: string
+          target_hero_image_path: string
+          target_hero_subtitle: string
+          target_hero_title: string
+          target_is_active: boolean
+          target_organization_id: string
+        }
+        Returns: undefined
       }
       set_product_image_primary: {
         Args: {
@@ -715,6 +921,9 @@ export type CompositeTypes<
     : never
 
 export const Constants = {
+  graphql_public: {
+    Enums: {},
+  },
   public: {
     Enums: {},
   },
