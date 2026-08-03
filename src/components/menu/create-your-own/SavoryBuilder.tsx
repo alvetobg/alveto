@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { menu, type MenuProduct } from "@/data/menu";
+import { builderItems, type BuilderItem } from "@/data/builder";
 
 import BuilderSection from "./BuilderSection";
 import BuilderOption from "./BuilderOption";
@@ -11,14 +11,10 @@ type SavoryBuilderProps = {
   onBack: () => void;
 };
 
-const createYourOwnMenu = menu.find(
-  (section) => section.id === "create-your-own"
-);
-
 const savoryGroups = (() => {
-  const groups = new Map<string, MenuProduct[]>();
+  const groups = new Map<string, BuilderItem[]>();
 
-  createYourOwnMenu?.products
+  builderItems
     .filter((item) =>
       [
         "Base",
@@ -74,8 +70,6 @@ export default function SavoryBuilder({
 
   const [selected, setSelected] =
     useState<string[]>([]);
-
-  if (!createYourOwnMenu) return null;
 
   const toggle = (
     sectionTitle: string,

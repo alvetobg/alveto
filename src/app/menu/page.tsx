@@ -4,7 +4,10 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import MenuHero from "@/components/menu/MenuHero";
 import MenuSection from "@/components/menu/MenuSection";
+import { getPublishedMenu } from "@/features/menu/service";
 import { site } from "@/lib/site";
+
+export const dynamic = "force-dynamic";
 
 const menuTitle = "ALVETO Menu | Coffee, Brunch & Desserts";
 const menuDescription =
@@ -53,13 +56,15 @@ export const metadata: Metadata = {
   },
 };
 
-export default function MenuPage() {
+export default async function MenuPage() {
+  const menuResult = await getPublishedMenu();
+
   return (
     <>
       <Navbar />
       <main id="main-content" tabIndex={-1} className="focus:outline-none">
         <MenuHero />
-        <MenuSection />
+        <MenuSection menu={menuResult.menu} state={menuResult.state} />
       </main>
       <Footer />
     </>

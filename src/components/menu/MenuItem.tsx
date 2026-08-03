@@ -6,6 +6,7 @@ type MenuItemProps = {
   description: string;
   price: number;
   image?: string;
+  imageAlt?: string;
   badge?: string;
   onClick?: () => void;
 };
@@ -15,6 +16,7 @@ export default function MenuItem({
   description,
   price,
   image,
+  imageAlt,
   badge,
   onClick,
 }: MenuItemProps) {
@@ -38,7 +40,7 @@ export default function MenuItem({
           <div className="relative h-56 w-full overflow-hidden md:h-auto md:w-72 md:flex-shrink-0">
             <Image
               src={imageSource}
-              alt={name}
+              alt={imageAlt ?? name}
               fill
               quality={85}
               sizes="(max-width: 767px) calc(100vw - 48px), 288px"

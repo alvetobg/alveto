@@ -8,7 +8,11 @@ import Navbar from "@/components/layout/Navbar";
 import Hero from "@/components/home/Hero";
 import Experience from "@/components/home/Experience";
 import StructuredData from "@/components/seo/StructuredData";
+import { selectSignatureProducts } from "@/features/menu/presentation";
+import { getPublishedMenu } from "@/features/menu/service";
 import { site } from "@/lib/site";
+
+export const dynamic = "force-dynamic";
 
 const homeTitle = site.seo.title;
 const homeDescription = site.seo.description;
@@ -56,7 +60,10 @@ export const metadata: Metadata = {
   },
 };
 
-export default function Home() {
+export default async function Home() {
+  const menuResult = await getPublishedMenu();
+  const signatureProducts = selectSignatureProducts(menuResult.menu);
+
   return (
     <>
       <StructuredData />
@@ -64,7 +71,7 @@ export default function Home() {
       <main id="main-content" tabIndex={-1} className="focus:outline-none">
         <Hero />
         <Experience />
-        <Signature />
+        <Signature products={signatureProducts} state={menuResult.state} />
         <About />
         <Reservation />
       </main>

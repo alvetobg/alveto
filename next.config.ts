@@ -72,10 +72,40 @@ const securityHeaders = [
   },
 ];
 
+function getSupabaseImageRemotePatterns() {
+  const value = process.env.SUPABASE_URL?.trim();
+
+  if (!value) {
+    return [];
+  }
+
+  try {
+    const url = new URL(value);
+
+    if (
+      url.protocol !== "https:" ||
+      !url.hostname.endsWith(".supabase.co")
+    ) {
+      return [];
+    }
+
+    return [
+      {
+        protocol: "https" as const,
+        hostname: url.hostname,
+        pathname: "/storage/v1/object/sign/product-images/**",
+      },
+    ];
+  } catch {
+    return [];
+  }
+}
+
 const nextConfig: NextConfig = {
   poweredByHeader: false,
   images: {
     qualities: [75, 85],
+    remotePatterns: getSupabaseImageRemotePatterns(),
   },
   async headers() {
     return [

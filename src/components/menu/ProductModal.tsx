@@ -14,6 +14,7 @@ type ProductModalProps = {
     description: string;
     price: number;
     image?: string;
+    imageAlt?: string;
     badge?: string;
   } | null;
 };
@@ -167,7 +168,7 @@ export default function ProductModal({
                 <div className="group relative h-56 overflow-hidden sm:h-72 md:h-[420px]">
                   <Image
                     src={imageSource}
-                    alt={product.name}
+                    alt={product.imageAlt ?? product.name}
                     fill
                     quality={85}
                     sizes="(max-width: 639px) calc(100vw - 24px), (max-width: 767px) calc(100vw - 48px), 896px"

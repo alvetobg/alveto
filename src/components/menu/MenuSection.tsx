@@ -6,12 +6,21 @@ import MenuItem from "@/components/menu/MenuItem";
 import CreateYourOwn from "@/components/menu/create-your-own/CreateYourOwn";
 import MenuNavigation from "@/components/menu/MenuNavigation";
 
-import { menu, type MenuProduct } from "@/data/menu";
+import type {
+  MenuCategory,
+  MenuProduct,
+  PublishedMenuResult,
+} from "@/features/menu/types";
 
 import Container from "@/components/ui/Container";
 import ProductModal from "@/components/menu/ProductModal";
 
-export default function MenuSection() {
+type MenuSectionProps = Readonly<{
+  menu: readonly MenuCategory[];
+  state: PublishedMenuResult["state"];
+}>;
+
+export default function MenuSection({ menu, state }: MenuSectionProps) {
   const [selectedProduct, setSelectedProduct] = useState<MenuProduct | null>(null);
   const [search, setSearch] = useState("");
   const searchInputRef = useRef<HTMLInputElement>(null);
@@ -27,7 +36,7 @@ export default function MenuSection() {
     const normalizedQuery = query.toLowerCase();
 
     return menu
-      .filter((category) => category.id !== "create-your-own")
+      .filter((category) => category.kind !== "builder")
       .map((category) => ({
         ...category,
         products: category.products.filter(
@@ -37,7 +46,7 @@ export default function MenuSection() {
         ),
       }))
       .filter((category) => category.products.length > 0);
-  }, [query]);
+  }, [menu, query]);
 
   const navigationCategories = useMemo(
     () =>
@@ -122,7 +131,23 @@ export default function MenuSection() {
           </div>
         </div>
 
-        {searchActive && resultCount === 0 ? (
+        {!searchActive && menu.length === 0 ? (
+          <div className="mx-auto max-w-3xl rounded-[32px] border border-black/5 bg-white px-6 py-14 text-center shadow-[0_10px_35px_rgba(0,0,0,0.05)] sm:px-10">
+            <p className="text-xs font-semibold uppercase tracking-[4px] text-primary">
+              {state === "error" ? "Temporarily unavailable" : "Coming soon"}
+            </p>
+            <h2 className="mt-4 text-3xl font-bold text-dark">
+              {state === "error"
+                ? "The menu could not be loaded"
+                : "No published menu items yet"}
+            </h2>
+            <p className="mx-auto mt-4 max-w-lg leading-7 text-text">
+              {state === "error"
+                ? "Please try again shortly."
+                : "Our published menu will appear here as soon as it is ready."}
+            </p>
+          </div>
+        ) : searchActive && resultCount === 0 ? (
           <div className="mx-auto max-w-3xl rounded-[32px] border border-black/5 bg-white px-6 py-14 text-center shadow-[0_10px_35px_rgba(0,0,0,0.05)] sm:px-10">
             <p className="text-xs font-semibold uppercase tracking-[4px] text-primary">
               No results
@@ -155,7 +180,7 @@ export default function MenuSection() {
                 image={category.image}
               />
 
-              {category.id === "create-your-own" ? (
+              {category.kind === "builder" ? (
                 <div className="mx-auto max-w-6xl">
                   <CreateYourOwn />
                 </div>
@@ -163,12 +188,12 @@ export default function MenuSection() {
                 <div className="mx-auto max-w-5xl space-y-2">
                   {category.products.map((item) => (
                     <MenuItem
-                      key={`${category.id}-${item.name}-${item.price}`}
+                      key={item.id}
                       name={item.name}
                       description={item.description}
                       price={item.price}
                       image={item.image}
-                      badge={item.badge}
+                      imageAlt={item.imageAlt}
                       onClick={() => setSelectedProduct(item)}
                     />
                   ))}
