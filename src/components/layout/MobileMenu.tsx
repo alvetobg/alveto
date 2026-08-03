@@ -6,16 +6,18 @@ import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { useEffect, useRef } from "react";
 
 import Button from "@/components/ui/Button";
-import { site } from "@/lib/site";
+import type { PublicReservationSettings } from "@/features/reservations/types";
 
 type MobileMenuProps = {
   open: boolean;
   onClose: () => void;
+  reservationSettings: PublicReservationSettings | null;
 };
 
 export default function MobileMenu({
   open,
   onClose,
+  reservationSettings,
 }: MobileMenuProps) {
   const panelRef = useRef<HTMLDivElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
@@ -144,9 +146,15 @@ export default function MobileMenu({
             </nav>
 
             <div className="mt-auto border-t border-black/10 pt-6">
-              <Button href={site.instagram} className="w-full py-4">
-                Reserve a Table
-              </Button>
+              {reservationSettings?.reservationsEnabled &&
+              reservationSettings.reservationUrl ? (
+                <Button
+                  href={reservationSettings.reservationUrl}
+                  className="w-full py-4"
+                >
+                  {reservationSettings.primaryCtaLabel}
+                </Button>
+              ) : null}
               <p className="mt-5 text-center text-sm leading-6 text-text">
                 Sokolska 4, Belgrade
               </p>

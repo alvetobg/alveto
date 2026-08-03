@@ -11,6 +11,7 @@ import Experience from "@/components/home/Experience";
 import StructuredData from "@/components/seo/StructuredData";
 import { getPublishedHomepage } from "@/features/homepage/service";
 import { getPublishedGallery } from "@/features/gallery/service";
+import { getPublicReservationSettings } from "@/features/reservations/service";
 import { site } from "@/lib/site";
 
 const homeTitle = site.seo.title;
@@ -60,20 +61,23 @@ export const metadata: Metadata = {
 };
 
 export default async function Home() {
-  const [homepageResult, galleryResult] = await Promise.all([
+  const [homepageResult, galleryResult, reservationResult] = await Promise.all([
     getPublishedHomepage(),
     getPublishedGallery(),
+    getPublicReservationSettings(),
   ]);
   const featuredSection = homepageResult.content?.featuredSection;
+  const reservationSettings = reservationResult.settings;
 
   return (
     <>
-      <StructuredData />
-      <Navbar />
+      <StructuredData reservationSettings={reservationSettings} />
+      <Navbar reservationSettings={reservationSettings} />
       <main id="main-content" tabIndex={-1} className="focus:outline-none">
         <Hero
           content={homepageResult.content?.hero ?? null}
           state={homepageResult.state}
+          reservationSettings={reservationSettings}
         />
         <Experience />
         {featuredSection ? (
@@ -84,11 +88,11 @@ export default async function Home() {
             state={homepageResult.state}
           />
         ) : null}
-        <About />
+        <About reservationSettings={reservationSettings} />
         <Gallery collections={galleryResult.collections} />
-        <Reservation />
+        <Reservation settings={reservationSettings} />
       </main>
-      <Footer />
+      <Footer reservationSettings={reservationSettings} />
     </>
   );
 }

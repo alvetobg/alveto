@@ -7,13 +7,19 @@ import type {
   HomepageHero,
   PublishedHomepageResult,
 } from "@/features/homepage/types";
+import type { PublicReservationSettings } from "@/features/reservations/types";
 
 type HeroProps = Readonly<{
   content: HomepageHero | null;
   state: PublishedHomepageResult["state"];
+  reservationSettings: PublicReservationSettings | null;
 }>;
 
-export default function Hero({ content, state }: HeroProps) {
+export default function Hero({
+  content,
+  state,
+  reservationSettings,
+}: HeroProps) {
   return (
     <section className="relative isolate flex min-h-[88svh] items-center overflow-hidden bg-dark md:min-h-screen">
       {/* Background */}
@@ -90,13 +96,16 @@ export default function Hero({ content, state }: HeroProps) {
               </Button>
             ) : null}
 
-            <Button
-              href="#reservation"
-              variant="secondary"
-              className="flex-1 md:w-auto"
-            >
-              Reserve
-            </Button>
+            {reservationSettings?.reservationsEnabled &&
+            reservationSettings.reservationUrl ? (
+              <Button
+                href="#reservation"
+                variant="secondary"
+                className="flex-1 md:w-auto"
+              >
+                {reservationSettings.primaryCtaLabel}
+              </Button>
+            ) : null}
           </div>
         </FadeIn>
       </div>

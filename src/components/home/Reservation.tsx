@@ -6,10 +6,17 @@ import Container from "@/components/ui/Container";
 import Section from "@/components/ui/Section";
 import Heading from "@/components/ui/Heading";
 import Button from "@/components/ui/Button";
+import type { PublicReservationSettings } from "@/features/reservations/types";
 
-import { site } from "@/lib/site";
+type ReservationProps = Readonly<{
+  settings: PublicReservationSettings | null;
+}>;
 
-export default function Reservation() {
+export default function Reservation({ settings }: ReservationProps) {
+  if (!settings?.reservationsEnabled || !settings.reservationUrl) {
+    return null;
+  }
+
   return (
     <Section
       id="reservation"
@@ -38,24 +45,35 @@ export default function Reservation() {
               Experience
             </Heading>
 
-            <p className="mx-auto mt-8 max-w-2xl text-lg leading-9 text-white/75">
-              Whether it&apos;s your morning coffee, weekend brunch
-              or an evening cocktail, we&apos;ll make sure your
-              table is waiting.
-            </p>
+            {settings.secondaryMessage ? (
+              <p className="mx-auto mt-8 max-w-2xl text-lg leading-9 text-white/75">
+                {settings.secondaryMessage}
+              </p>
+            ) : null}
 
             <div className="mt-14 flex flex-wrap justify-center gap-5">
-              <Button href={`tel:${site.phone}`}>
-                Call Us
+              <Button href={settings.reservationUrl}>
+                {settings.primaryCtaLabel}
               </Button>
 
-              <Button
-                href={site.instagram}
-                variant="secondary"
-              >
-                Instagram
-              </Button>
+              {settings.phoneHref ? (
+                <Button href={settings.phoneHref} variant="secondary">
+                  Call Us
+                </Button>
+              ) : null}
+
+              {settings.whatsappHref ? (
+                <Button href={settings.whatsappHref} variant="secondary">
+                  WhatsApp
+                </Button>
+              ) : null}
             </div>
+
+            {settings.bookingInstructions ? (
+              <p className="mx-auto mt-8 max-w-2xl text-sm leading-7 text-white/65">
+                {settings.bookingInstructions}
+              </p>
+            ) : null}
           </div>
         </FadeIn>
       </Container>

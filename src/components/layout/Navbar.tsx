@@ -6,9 +6,13 @@ import { useCallback, useEffect, useState } from "react";
 
 import MobileMenu from "@/components/layout/MobileMenu";
 import Button from "@/components/ui/Button";
-import { site } from "@/lib/site";
+import type { PublicReservationSettings } from "@/features/reservations/types";
 
-export default function Navbar() {
+type NavbarProps = Readonly<{
+  reservationSettings: PublicReservationSettings | null;
+}>;
+
+export default function Navbar({ reservationSettings }: NavbarProps) {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -79,9 +83,12 @@ export default function Navbar() {
             Menu
           </Link>
 
-          <Button href={site.instagram}>
-            Reserve
-          </Button>
+          {reservationSettings?.reservationsEnabled &&
+          reservationSettings.reservationUrl ? (
+            <Button href={reservationSettings.reservationUrl}>
+              {reservationSettings.primaryCtaLabel}
+            </Button>
+          ) : null}
         </nav>
 
         <button
@@ -105,7 +112,11 @@ export default function Navbar() {
         </button>
       </div>
 
-      <MobileMenu open={menuOpen} onClose={closeMenu} />
+      <MobileMenu
+        open={menuOpen}
+        onClose={closeMenu}
+        reservationSettings={reservationSettings}
+      />
     </header>
   );
 }

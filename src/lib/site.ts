@@ -7,14 +7,6 @@ export const site = {
 
   domain: "https://alveto-bg.com",
 
-  // Contact
-
-  phone: "+381665707777",
-
-  phoneDisplay: "+381 66 570 7777",
-
-  email: "alveto.bg@gmail.com",
-
   // Social
 
   instagram: "https://instagram.com/alveto.bg",

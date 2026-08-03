@@ -1,6 +1,13 @@
 import { site } from "@/lib/site";
+import type { PublicReservationSettings } from "@/features/reservations/types";
 
-export default function StructuredData() {
+type StructuredDataProps = Readonly<{
+  reservationSettings: PublicReservationSettings | null;
+}>;
+
+export default function StructuredData({
+  reservationSettings,
+}: StructuredDataProps) {
   const data = {
     "@context": "https://schema.org",
     "@type": "CafeOrCoffeeShop",
@@ -10,8 +17,12 @@ export default function StructuredData() {
     image: `${site.domain}/images/hero.jpg`,
     url: site.domain,
     menu: `${site.domain}/menu`,
-    telephone: site.phone,
-    email: site.email,
+    ...(reservationSettings?.phoneNumber
+      ? { telephone: reservationSettings.phoneNumber }
+      : {}),
+    ...(reservationSettings?.email
+      ? { email: reservationSettings.email }
+      : {}),
     servesCuisine: [
       "Breakfast",
       "Brunch",

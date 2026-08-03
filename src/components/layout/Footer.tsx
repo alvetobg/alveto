@@ -2,9 +2,14 @@ import Image from "next/image";
 
 import Container from "@/components/ui/Container";
 import Button from "@/components/ui/Button";
+import type { PublicReservationSettings } from "@/features/reservations/types";
 import { site } from "@/lib/site";
 
-export default function Footer() {
+type FooterProps = Readonly<{
+  reservationSettings: PublicReservationSettings | null;
+}>;
+
+export default function Footer({ reservationSettings }: FooterProps) {
   return (
     <footer className="relative overflow-hidden bg-[#1B1B1B] text-white">
       {/* Background Glow */}
@@ -36,11 +41,14 @@ export default function Footer() {
             in the heart of Belgrade.
           </p>
 
-          <div className="mt-12">
-            <Button href={site.instagram}>
-              Reserve a Table
-            </Button>
-          </div>
+          {reservationSettings?.reservationsEnabled &&
+          reservationSettings.reservationUrl ? (
+            <div className="mt-12">
+              <Button href={reservationSettings.reservationUrl}>
+                {reservationSettings.primaryCtaLabel}
+              </Button>
+            </div>
+          ) : null}
         </div>
 
         {/* Content */}
@@ -102,19 +110,24 @@ export default function Footer() {
             </h4>
 
             <div className="space-y-3">
-              <a
-                href={`mailto:${site.email}`}
-                className="block transition-colors duration-300 hover:text-primary"
-              >
-                {site.email}
-              </a>
+              {reservationSettings?.email ? (
+                <a
+                  href={`mailto:${reservationSettings.email}`}
+                  className="block transition-colors duration-300 hover:text-primary"
+                >
+                  {reservationSettings.email}
+                </a>
+              ) : null}
 
-              <a
-                href={`tel:${site.phone}`}
-                className="block transition-colors duration-300 hover:text-primary"
-              >
-                {site.phoneDisplay}
-              </a>
+              {reservationSettings?.phoneNumber &&
+              reservationSettings.phoneHref ? (
+                <a
+                  href={reservationSettings.phoneHref}
+                  className="block transition-colors duration-300 hover:text-primary"
+                >
+                  {reservationSettings.phoneNumber}
+                </a>
+              ) : null}
 
               <a
                 href={site.instagram}

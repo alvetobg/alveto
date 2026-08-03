@@ -705,6 +705,68 @@ export type Database = {
         }
         Relationships: []
       }
+      reservation_settings: {
+        Row: {
+          advance_booking_notice_minutes: number | null
+          booking_instructions: string | null
+          created_at: string
+          email: string | null
+          id: string
+          maximum_party_size: number | null
+          minimum_party_size: number | null
+          organization_id: string
+          phone_number: string | null
+          primary_cta_label: string
+          reservation_url: string | null
+          reservations_enabled: boolean
+          secondary_message: string | null
+          updated_at: string
+          whatsapp_contact: string | null
+        }
+        Insert: {
+          advance_booking_notice_minutes?: number | null
+          booking_instructions?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          maximum_party_size?: number | null
+          minimum_party_size?: number | null
+          organization_id: string
+          phone_number?: string | null
+          primary_cta_label: string
+          reservation_url?: string | null
+          reservations_enabled?: boolean
+          secondary_message?: string | null
+          updated_at?: string
+          whatsapp_contact?: string | null
+        }
+        Update: {
+          advance_booking_notice_minutes?: number | null
+          booking_instructions?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          maximum_party_size?: number | null
+          minimum_party_size?: number | null
+          organization_id?: string
+          phone_number?: string | null
+          primary_cta_label?: string
+          reservation_url?: string | null
+          reservations_enabled?: boolean
+          secondary_message?: string | null
+          updated_at?: string
+          whatsapp_contact?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reservation_settings_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: true
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       role_permissions: {
         Row: {
           created_at: string
@@ -796,6 +858,22 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_alveto_public_reservation_settings: {
+        Args: never
+        Returns: {
+          advance_booking_notice_minutes: number
+          booking_instructions: string
+          email: string
+          maximum_party_size: number
+          minimum_party_size: number
+          phone_number: string
+          primary_cta_label: string
+          reservation_url: string
+          reservations_enabled: boolean
+          secondary_message: string
+          whatsapp_contact: string
+        }[]
+      }
       get_alveto_published_gallery: {
         Args: never
         Returns: {
@@ -938,6 +1016,23 @@ export type Database = {
           target_organization_id: string
         }
         Returns: undefined
+      }
+      save_reservation_settings: {
+        Args: {
+          target_advance_booking_notice_minutes: number
+          target_booking_instructions: string
+          target_email: string
+          target_maximum_party_size: number
+          target_minimum_party_size: number
+          target_organization_id: string
+          target_phone_number: string
+          target_primary_cta_label: string
+          target_reservation_url: string
+          target_reservations_enabled: boolean
+          target_secondary_message: string
+          target_whatsapp_contact: string
+        }
+        Returns: string
       }
       set_product_image_primary: {
         Args: {

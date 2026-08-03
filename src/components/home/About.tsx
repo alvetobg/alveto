@@ -6,8 +6,13 @@ import Container from "@/components/ui/Container";
 import Heading from "@/components/ui/Heading";
 import Section from "@/components/ui/Section";
 import Button from "@/components/ui/Button";
+import type { PublicReservationSettings } from "@/features/reservations/types";
 
-export default function About() {
+type AboutProps = Readonly<{
+  reservationSettings: PublicReservationSettings | null;
+}>;
+
+export default function About({ reservationSettings }: AboutProps) {
   return (
     <Section id="about" className="bg-white">
       <Container>
@@ -63,9 +68,12 @@ export default function About() {
               </p>
 
               <div className="mt-12 flex flex-col gap-4 sm:flex-row sm:gap-5 lg:mt-16">
-                <Button href="#reservation" className="w-full sm:w-auto">
-                  Reserve Your Table
-                </Button>
+                {reservationSettings?.reservationsEnabled &&
+                reservationSettings.reservationUrl ? (
+                  <Button href="#reservation" className="w-full sm:w-auto">
+                    {reservationSettings.primaryCtaLabel}
+                  </Button>
+                ) : null}
 
                 <Button
                   href="/menu"
