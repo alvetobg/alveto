@@ -6,18 +6,36 @@ import { createPublishedMenuRepository } from "@/features/menu/repository";
 import type { PublishedMenuResult } from "@/features/menu/types";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
+type DiagnosticValue = string | number | boolean | null;
+
+function getDiagnosticValue(error: unknown, property: string) {
+  if (typeof error !== "object" || error === null || !(property in error)) {
+    return undefined;
+  }
+
+  const value = (error as Record<string, unknown>)[property];
+
+  return value === null ||
+    typeof value === "string" ||
+    typeof value === "number" ||
+    typeof value === "boolean"
+    ? (value as DiagnosticValue)
+    : undefined;
+}
+
 function getErrorDiagnostic(error: unknown) {
-  const status =
-    typeof error === "object" &&
-    error !== null &&
-    "status" in error &&
-    typeof error.status === "number"
-      ? error.status
-      : undefined;
+  const code = getDiagnosticValue(error, "code");
+  const status = getDiagnosticValue(error, "status");
+  const details = getDiagnosticValue(error, "details");
 
   return {
     name: error instanceof Error ? error.name : "UnknownError",
-    ...(status ? { status } : {}),
+    message: error instanceof Error ? error.message : "Unknown error",
+    constructorName:
+      error instanceof Error ? error.constructor.name : typeof error,
+    ...(code !== undefined ? { code } : {}),
+    ...(status !== undefined ? { status } : {}),
+    ...(details !== undefined ? { details } : {}),
   };
 }
 
