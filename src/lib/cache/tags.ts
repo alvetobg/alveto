@@ -1,4 +1,5 @@
 export const publicCacheTags = {
+  gallery: "alveto-public-gallery",
   homepage: "alveto-public-homepage",
   publicMenu: "alveto-public-menu",
 } as const;

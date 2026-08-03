@@ -9,6 +9,9 @@ type PublishedMenuRpcRow =
 type PublishedHomepageRpcRow =
   Database["public"]["Functions"]["get_alveto_published_homepage"]["Returns"][number];
 
+type PublishedGalleryRpcRow =
+  Database["public"]["Functions"]["get_alveto_published_gallery"]["Returns"][number];
+
 type SignedImage = Readonly<{
   path: string;
   signedUrl: string;
@@ -21,6 +24,7 @@ type StorageSignedUrlPayload = Readonly<{
 export class SupabaseServerClientError extends Error {
   constructor(
     readonly operation:
+      | "published-gallery"
       | "published-homepage"
       | "published-menu"
       | "sign-images",
@@ -60,6 +64,31 @@ export function createSupabaseServerClient() {
   const headers = createHeaders(environment.supabasePublishableKey);
 
   return {
+    async getPublishedGalleryRows(): Promise<PublishedGalleryRpcRow[]> {
+      const requestUrl = new URL(
+        "/rest/v1/rpc/get_alveto_published_gallery",
+        environment.supabaseUrl,
+      );
+      const requestHeaders = new Headers(headers);
+      requestHeaders.set("Content-Type", "application/json");
+
+      const payload = await parseJson(
+        await fetch(requestUrl, {
+          method: "POST",
+          headers: requestHeaders,
+          body: "{}",
+          cache: "no-store",
+        }),
+        "published-gallery",
+      );
+
+      if (!Array.isArray(payload)) {
+        throw new SupabaseServerClientError("published-gallery");
+      }
+
+      return payload as PublishedGalleryRpcRow[];
+    },
+
     async getPublishedHomepageRows(): Promise<PublishedHomepageRpcRow[]> {
       const requestUrl = new URL(
         "/rest/v1/rpc/get_alveto_published_homepage",

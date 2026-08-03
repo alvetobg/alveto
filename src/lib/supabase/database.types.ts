@@ -86,6 +86,135 @@ export type Database = {
           },
         ]
       }
+      gallery_collections: {
+        Row: {
+          created_at: string
+          deleted_at: string | null
+          description: string | null
+          display_order: number
+          id: string
+          is_active: boolean
+          organization_id: string
+          published_at: string | null
+          slug: string
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          deleted_at?: string | null
+          description?: string | null
+          display_order?: number
+          id?: string
+          is_active?: boolean
+          organization_id: string
+          published_at?: string | null
+          slug: string
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          deleted_at?: string | null
+          description?: string | null
+          display_order?: number
+          id?: string
+          is_active?: boolean
+          organization_id?: string
+          published_at?: string | null
+          slug?: string
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "gallery_collections_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      gallery_items: {
+        Row: {
+          alt_text: string
+          caption: string | null
+          collection_id: string
+          created_at: string
+          deleted_at: string | null
+          description: string | null
+          display_order: number
+          id: string
+          is_active: boolean
+          media_asset_id: string
+          organization_id: string
+          published_at: string | null
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          alt_text: string
+          caption?: string | null
+          collection_id: string
+          created_at?: string
+          deleted_at?: string | null
+          description?: string | null
+          display_order?: number
+          id?: string
+          is_active?: boolean
+          media_asset_id: string
+          organization_id: string
+          published_at?: string | null
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          alt_text?: string
+          caption?: string | null
+          collection_id?: string
+          created_at?: string
+          deleted_at?: string | null
+          description?: string | null
+          display_order?: number
+          id?: string
+          is_active?: boolean
+          media_asset_id?: string
+          organization_id?: string
+          published_at?: string | null
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "gallery_items_collection_tenant_fkey"
+            columns: ["organization_id", "collection_id"]
+            isOneToOne: false
+            referencedRelation: "gallery_collections"
+            referencedColumns: ["organization_id", "id"]
+          },
+          {
+            foreignKeyName: "gallery_items_media_tenant_fkey"
+            columns: ["organization_id", "media_asset_id"]
+            isOneToOne: false
+            referencedRelation: "media_assets"
+            referencedColumns: ["organization_id", "id"]
+          },
+          {
+            foreignKeyName: "gallery_items_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       homepage_featured_products: {
         Row: {
           created_at: string
@@ -667,6 +796,25 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_alveto_published_gallery: {
+        Args: never
+        Returns: {
+          collection_description: string
+          collection_display_order: number
+          collection_id: string
+          collection_title: string
+          image_height: number
+          image_mime_type: string
+          image_storage_path: string
+          image_width: number
+          item_alt_text: string
+          item_caption: string
+          item_description: string
+          item_display_order: number
+          item_id: string
+          item_title: string
+        }[]
+      }
       get_alveto_published_homepage: {
         Args: never
         Returns: {
@@ -707,6 +855,10 @@ export type Database = {
       }
       has_permission: {
         Args: { target_organization_id: string; target_permission_key: string }
+        Returns: boolean
+      }
+      is_alveto_published_gallery_image: {
+        Args: { target_bucket_id: string; target_object_name: string }
         Returns: boolean
       }
       is_alveto_published_product_image: {
@@ -750,6 +902,26 @@ export type Database = {
           organization_slug: string
         }[]
       }
+      restore_gallery_item: {
+        Args: { target_item_id: string; target_organization_id: string }
+        Returns: undefined
+      }
+      save_gallery_item: {
+        Args: {
+          target_alt_text: string
+          target_caption: string
+          target_collection_id: string
+          target_description: string
+          target_display_order: number
+          target_is_active: boolean
+          target_item_id?: string
+          target_media_asset_id: string
+          target_organization_id: string
+          target_status: string
+          target_title: string
+        }
+        Returns: string
+      }
       save_homepage_content: {
         Args: {
           target_featured_display_order: number
@@ -773,6 +945,10 @@ export type Database = {
           target_product_id: string
           target_product_image_id: string
         }
+        Returns: undefined
+      }
+      soft_delete_gallery_item: {
+        Args: { target_item_id: string; target_organization_id: string }
         Returns: undefined
       }
       soft_delete_product_image: {

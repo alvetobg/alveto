@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 
 import Reservation from "@/components/home/Reservation";
+import Gallery from "@/components/home/Gallery";
 import Footer from "@/components/layout/Footer";
 import About from "@/components/home/About";
 import Signature from "@/components/home/Signature";
@@ -9,9 +10,8 @@ import Hero from "@/components/home/Hero";
 import Experience from "@/components/home/Experience";
 import StructuredData from "@/components/seo/StructuredData";
 import { getPublishedHomepage } from "@/features/homepage/service";
+import { getPublishedGallery } from "@/features/gallery/service";
 import { site } from "@/lib/site";
-
-export const dynamic = "force-dynamic";
 
 const homeTitle = site.seo.title;
 const homeDescription = site.seo.description;
@@ -60,7 +60,10 @@ export const metadata: Metadata = {
 };
 
 export default async function Home() {
-  const homepageResult = await getPublishedHomepage();
+  const [homepageResult, galleryResult] = await Promise.all([
+    getPublishedHomepage(),
+    getPublishedGallery(),
+  ]);
   const featuredSection = homepageResult.content?.featuredSection;
 
   return (
@@ -82,6 +85,7 @@ export default async function Home() {
           />
         ) : null}
         <About />
+        <Gallery collections={galleryResult.collections} />
         <Reservation />
       </main>
       <Footer />
