@@ -12,53 +12,12 @@ import StructuredData from "@/components/seo/StructuredData";
 import { getPublishedHomepage } from "@/features/homepage/service";
 import { getPublishedGallery } from "@/features/gallery/service";
 import { getPublicReservationSettings } from "@/features/reservations/service";
-import { site } from "@/lib/site";
+import { createPageMetadata } from "@/features/seo/metadata";
+import { getPublicSeo } from "@/features/seo/service";
 
-const homeTitle = site.seo.title;
-const homeDescription = site.seo.description;
-const homeImage = {
-  url: "/images/hero.jpg",
-  width: 1600,
-  height: 1066,
-  alt: "ALVETO specialty coffee, brunch, desserts and cocktails",
-  type: "image/jpeg",
-};
-
-export const metadata: Metadata = {
-  title: {
-    absolute: homeTitle,
-  },
-  description: homeDescription,
-  alternates: {
-    canonical: "/",
-  },
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: {
-      index: true,
-      follow: true,
-      "max-image-preview": "large",
-      "max-snippet": -1,
-      "max-video-preview": -1,
-    },
-  },
-  openGraph: {
-    type: "website",
-    locale: "en_US",
-    siteName: site.name,
-    url: "/",
-    title: homeTitle,
-    description: homeDescription,
-    images: [homeImage],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: homeTitle,
-    description: homeDescription,
-    images: [homeImage],
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  return createPageMetadata("homepage", await getPublicSeo());
+}
 
 export default async function Home() {
   const [homepageResult, galleryResult, reservationResult] = await Promise.all([

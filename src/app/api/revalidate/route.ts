@@ -1,6 +1,6 @@
 import { createHmac, timingSafeEqual } from "node:crypto";
 
-import { revalidateTag } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { NextResponse } from "next/server";
 
 import {
@@ -66,19 +66,27 @@ function isValidSignature(
   );
 }
 
-function isRevalidationPayload(
-  value: unknown,
-): value is { tags: PublicCacheTag[] } {
+type RevalidationPath = "/" | "/menu";
+
+const revalidationPaths = ["/", "/menu"] as const satisfies readonly RevalidationPath[];
+
+function isRevalidationPayload(value: unknown): value is {
+  tags: PublicCacheTag[];
+  paths?: RevalidationPath[];
+} {
   if (typeof value !== "object" || value === null || !("tags" in value)) {
     return false;
   }
 
   const keys = Object.keys(value);
-  const tags = (value as { tags?: unknown }).tags;
+  const payload = value as { tags?: unknown; paths?: unknown };
+  const tags = payload.tags;
+  const paths = payload.paths;
 
   return (
-    keys.length === 1 &&
-    keys[0] === "tags" &&
+    keys.length >= 1 &&
+    keys.length <= 2 &&
+    keys.every((key) => key === "tags" || key === "paths") &&
     Array.isArray(tags) &&
     tags.length > 0 &&
     tags.length <= publicCacheTagValues.length &&
@@ -87,7 +95,17 @@ function isRevalidationPayload(
       (tag): tag is PublicCacheTag =>
         typeof tag === "string" &&
         publicCacheTagValues.includes(tag as PublicCacheTag),
-    )
+    ) &&
+    (paths === undefined ||
+      (Array.isArray(paths) &&
+        paths.length > 0 &&
+        paths.length <= revalidationPaths.length &&
+        new Set(paths).size === paths.length &&
+        paths.every(
+          (path): path is RevalidationPath =>
+            typeof path === "string" &&
+            revalidationPaths.includes(path as RevalidationPath),
+        )))
   );
 }
 
@@ -139,8 +157,15 @@ export async function POST(request: Request) {
     revalidateTag(tag, { expire: 0 });
   }
 
+  for (const path of payload.paths ?? []) {
+    revalidatePath(path, "page");
+  }
+
   return NextResponse.json(
-    { revalidated: payload.tags },
+    {
+      revalidated: payload.tags,
+      ...(payload.paths ? { paths: payload.paths } : {}),
+    },
     { headers: { "cache-control": "no-store" } },
   );
 }

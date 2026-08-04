@@ -1,4 +1,4 @@
-﻿export type Json =
+export type Json =
   | string
   | number
   | boolean
@@ -1020,6 +1020,88 @@ export type Database = {
           },
         ]
       }
+      seo_settings: {
+        Row: {
+          canonical_url: string | null
+          created_at: string
+          id: string
+          meta_description: string | null
+          open_graph_description: string | null
+          open_graph_media_asset_id: string | null
+          open_graph_title: string | null
+          organization_id: string
+          page_key: string
+          robots_follow: boolean | null
+          robots_index: boolean | null
+          title: string | null
+          twitter_card_type: string | null
+          twitter_description: string | null
+          twitter_media_asset_id: string | null
+          twitter_title: string | null
+          updated_at: string
+        }
+        Insert: {
+          canonical_url?: string | null
+          created_at?: string
+          id?: string
+          meta_description?: string | null
+          open_graph_description?: string | null
+          open_graph_media_asset_id?: string | null
+          open_graph_title?: string | null
+          organization_id: string
+          page_key: string
+          robots_follow?: boolean | null
+          robots_index?: boolean | null
+          title?: string | null
+          twitter_card_type?: string | null
+          twitter_description?: string | null
+          twitter_media_asset_id?: string | null
+          twitter_title?: string | null
+          updated_at?: string
+        }
+        Update: {
+          canonical_url?: string | null
+          created_at?: string
+          id?: string
+          meta_description?: string | null
+          open_graph_description?: string | null
+          open_graph_media_asset_id?: string | null
+          open_graph_title?: string | null
+          organization_id?: string
+          page_key?: string
+          robots_follow?: boolean | null
+          robots_index?: boolean | null
+          title?: string | null
+          twitter_card_type?: string | null
+          twitter_description?: string | null
+          twitter_media_asset_id?: string | null
+          twitter_title?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "seo_settings_open_graph_media_tenant_fkey"
+            columns: ["organization_id", "open_graph_media_asset_id"]
+            isOneToOne: false
+            referencedRelation: "media_assets"
+            referencedColumns: ["organization_id", "id"]
+          },
+          {
+            foreignKeyName: "seo_settings_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "seo_settings_twitter_media_tenant_fkey"
+            columns: ["organization_id", "twitter_media_asset_id"]
+            isOneToOne: false
+            referencedRelation: "media_assets"
+            referencedColumns: ["organization_id", "id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -1039,6 +1121,34 @@ export type Database = {
           reservations_enabled: boolean
           secondary_message: string
           whatsapp_contact: string
+        }[]
+      }
+      get_alveto_public_seo: {
+        Args: never
+        Returns: {
+          canonical_url: string
+          meta_description: string
+          open_graph_description: string
+          open_graph_image_alt_text: string
+          open_graph_image_height: number
+          open_graph_image_mime_type: string
+          open_graph_image_storage_path: string
+          open_graph_image_width: number
+          open_graph_media_asset_id: string
+          open_graph_title: string
+          page_key: string
+          robots_follow: boolean
+          robots_index: boolean
+          title: string
+          twitter_card_type: string
+          twitter_description: string
+          twitter_image_alt_text: string
+          twitter_image_height: number
+          twitter_image_mime_type: string
+          twitter_image_storage_path: string
+          twitter_image_width: number
+          twitter_media_asset_id: string
+          twitter_title: string
         }[]
       }
       get_alveto_published_builders: {
@@ -1276,6 +1386,25 @@ export type Database = {
           target_reservations_enabled: boolean
           target_secondary_message: string
           target_whatsapp_contact: string
+        }
+        Returns: string
+      }
+      save_seo_settings: {
+        Args: {
+          target_canonical_url: string
+          target_meta_description: string
+          target_open_graph_description: string
+          target_open_graph_media_asset_id: string
+          target_open_graph_title: string
+          target_organization_id: string
+          target_page_key: string
+          target_robots_follow: boolean
+          target_robots_index: boolean
+          target_title: string
+          target_twitter_card_type: string
+          target_twitter_description: string
+          target_twitter_media_asset_id: string
+          target_twitter_title: string
         }
         Returns: string
       }

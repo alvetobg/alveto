@@ -7,56 +7,14 @@ import MenuSection from "@/components/menu/MenuSection";
 import { getPublishedBuilders } from "@/features/builders/service";
 import { getPublishedMenu } from "@/features/menu/service";
 import { getPublicReservationSettings } from "@/features/reservations/service";
-import { site } from "@/lib/site";
+import { createPageMetadata } from "@/features/seo/metadata";
+import { getPublicSeo } from "@/features/seo/service";
 
 export const dynamic = "force-dynamic";
 
-const menuTitle = "ALVETO Menu | Coffee, Brunch & Desserts";
-const menuDescription =
-  "Explore the ALVETO menu of specialty coffee, breakfast, brunch, sweet and savory creations, desserts and cocktails.";
-const menuImage = {
-  url: "/images/menu-hero.webp",
-  width: 2400,
-  height: 1350,
-  alt: "ALVETO menu",
-  type: "image/webp",
-};
-
-export const metadata: Metadata = {
-  title: {
-    absolute: menuTitle,
-  },
-  description: menuDescription,
-  alternates: {
-    canonical: "/menu",
-  },
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: {
-      index: true,
-      follow: true,
-      "max-image-preview": "large",
-      "max-snippet": -1,
-      "max-video-preview": -1,
-    },
-  },
-  openGraph: {
-    type: "website",
-    locale: "en_US",
-    siteName: site.name,
-    url: "/menu",
-    title: menuTitle,
-    description: menuDescription,
-    images: [menuImage],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: menuTitle,
-    description: menuDescription,
-    images: [menuImage],
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  return createPageMetadata("menu", await getPublicSeo());
+}
 
 export default async function MenuPage() {
   const [menuResult, reservationResult, builderResult] = await Promise.all([

@@ -2,6 +2,8 @@ import type { Metadata, Viewport } from "next";
 import { Manrope } from "next/font/google";
 
 import "./globals.css";
+import { getGlobalSeoDefaults } from "@/features/seo/metadata";
+import { getPublicSeo } from "@/features/seo/service";
 import { site } from "@/lib/site";
 
 const manrope = Manrope({
@@ -15,47 +17,51 @@ export const viewport: Viewport = {
   colorScheme: "light",
 };
 
-export const metadata: Metadata = {
-  metadataBase: new URL(site.domain),
+export async function generateMetadata(): Promise<Metadata> {
+  const defaults = getGlobalSeoDefaults(await getPublicSeo());
 
-  title: {
-    default: site.seo.title,
-    template: "%s | ALVETO",
-  },
+  return {
+    metadataBase: new URL(site.domain),
 
-  description: site.seo.description,
-
-  keywords: site.seo.keywords,
-
-  authors: [
-    {
-      name: "ALVETO",
+    title: {
+      default: defaults.title,
+      template: "%s | ALVETO",
     },
-  ],
 
-  creator: "ALVETO",
-  publisher: "ALVETO",
-  applicationName: "ALVETO",
+    description: defaults.description,
 
-  category: "Restaurant",
-  classification: "Restaurant",
+    keywords: site.seo.keywords,
 
-  referrer: "origin-when-cross-origin",
+    authors: [
+      {
+        name: "ALVETO",
+      },
+    ],
 
-  formatDetection: {
-    email: false,
-    address: false,
-    telephone: false,
-  },
+    creator: "ALVETO",
+    publisher: "ALVETO",
+    applicationName: "ALVETO",
 
-  appleWebApp: {
-    capable: true,
-    statusBarStyle: "black-translucent",
-    title: "ALVETO",
-  },
+    category: "Restaurant",
+    classification: "Restaurant",
 
-  manifest: "/manifest.webmanifest",
-};
+    referrer: "origin-when-cross-origin",
+
+    formatDetection: {
+      email: false,
+      address: false,
+      telephone: false,
+    },
+
+    appleWebApp: {
+      capable: true,
+      statusBarStyle: "black-translucent",
+      title: "ALVETO",
+    },
+
+    manifest: "/manifest.webmanifest",
+  };
+}
 
 export default function RootLayout({
   children,
