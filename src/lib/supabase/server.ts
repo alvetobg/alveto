@@ -20,6 +20,8 @@ type PublishedBuilderRpcRow =
 
 type PublicSeoRpcRow =
   Database["public"]["Functions"]["get_alveto_public_seo"]["Returns"][number];
+type PublicSiteSettingsRpcRow =
+  Database["public"]["Functions"]["get_alveto_public_site_settings"]["Returns"][number];
 
 type SignedImage = Readonly<{
   path: string;
@@ -39,6 +41,7 @@ export class SupabaseServerClientError extends Error {
       | "published-menu"
       | "public-reservations"
       | "public-seo"
+      | "public-site-settings"
       | "sign-images",
     readonly status?: number,
   ) {
@@ -76,6 +79,31 @@ export function createSupabaseServerClient() {
   const headers = createHeaders(environment.supabasePublishableKey);
 
   return {
+    async getPublicSiteSettingsRows(): Promise<PublicSiteSettingsRpcRow[]> {
+      const requestUrl = new URL(
+        "/rest/v1/rpc/get_alveto_public_site_settings",
+        environment.supabaseUrl,
+      );
+      const requestHeaders = new Headers(headers);
+      requestHeaders.set("Content-Type", "application/json");
+
+      const payload = await parseJson(
+        await fetch(requestUrl, {
+          method: "POST",
+          headers: requestHeaders,
+          body: "{}",
+          cache: "no-store",
+        }),
+        "public-site-settings",
+      );
+
+      if (!Array.isArray(payload)) {
+        throw new SupabaseServerClientError("public-site-settings");
+      }
+
+      return payload as PublicSiteSettingsRpcRow[];
+    },
+
     async getPublicSeoRows(): Promise<PublicSeoRpcRow[]> {
       const requestUrl = new URL(
         "/rest/v1/rpc/get_alveto_public_seo",

@@ -7,17 +7,21 @@ import { useEffect, useRef } from "react";
 
 import Button from "@/components/ui/Button";
 import type { PublicReservationSettings } from "@/features/reservations/types";
+import { formatAddress } from "@/features/site-settings/presentation";
+import type { PublicSiteSettings } from "@/features/site-settings/types";
 
 type MobileMenuProps = {
   open: boolean;
   onClose: () => void;
   reservationSettings: PublicReservationSettings | null;
+  siteSettings: PublicSiteSettings;
 };
 
 export default function MobileMenu({
   open,
   onClose,
   reservationSettings,
+  siteSettings,
 }: MobileMenuProps) {
   const panelRef = useRef<HTMLDivElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
@@ -100,10 +104,14 @@ export default function MobileMenu({
             className="absolute inset-y-0 right-0 flex w-[min(88vw,380px)] flex-col bg-cream px-7 pb-8 pt-6 shadow-[-20px_0_60px_rgba(0,0,0,0.2)]"
           >
             <div className="flex items-center justify-between border-b border-black/10 pb-6">
-              <Link href="/" aria-label="ALVETO Home" onClick={onClose}>
+              <Link
+                href="/"
+                aria-label={`${siteSettings.businessName} Home`}
+                onClick={onClose}
+              >
                 <Image
                   src="/logos/alveto-wordmark.png"
-                  alt="Alveto"
+                  alt={siteSettings.businessName}
                   width={120}
                   height={29}
                   sizes="120px"
@@ -155,9 +163,11 @@ export default function MobileMenu({
                   {reservationSettings.primaryCtaLabel}
                 </Button>
               ) : null}
-              <p className="mt-5 text-center text-sm leading-6 text-text">
-                Sokolska 4, Belgrade
-              </p>
+              {formatAddress(siteSettings) ? (
+                <p className="mt-5 text-center text-sm leading-6 text-text">
+                  {formatAddress(siteSettings)}
+                </p>
+              ) : null}
             </div>
           </motion.div>
         </motion.div>

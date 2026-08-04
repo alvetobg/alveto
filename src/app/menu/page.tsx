@@ -9,6 +9,7 @@ import { getPublishedMenu } from "@/features/menu/service";
 import { getPublicReservationSettings } from "@/features/reservations/service";
 import { createPageMetadata } from "@/features/seo/metadata";
 import { getPublicSeo } from "@/features/seo/service";
+import { getPublicSiteSettings } from "@/features/site-settings/service";
 
 export const dynamic = "force-dynamic";
 
@@ -17,16 +18,21 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function MenuPage() {
-  const [menuResult, reservationResult, builderResult] = await Promise.all([
-    getPublishedMenu(),
-    getPublicReservationSettings(),
-    getPublishedBuilders(),
-  ]);
+  const [menuResult, reservationResult, builderResult, siteSettingsResult] =
+    await Promise.all([
+      getPublishedMenu(),
+      getPublicReservationSettings(),
+      getPublishedBuilders(),
+      getPublicSiteSettings(),
+    ]);
   const reservationSettings = reservationResult.settings;
 
   return (
     <>
-      <Navbar reservationSettings={reservationSettings} />
+      <Navbar
+        reservationSettings={reservationSettings}
+        siteSettings={siteSettingsResult.settings}
+      />
       <main id="main-content" tabIndex={-1} className="focus:outline-none">
         <MenuHero />
         <MenuSection
@@ -36,7 +42,10 @@ export default async function MenuPage() {
           builderState={builderResult.state}
         />
       </main>
-      <Footer reservationSettings={reservationSettings} />
+      <Footer
+        reservationSettings={reservationSettings}
+        siteSettings={siteSettingsResult.settings}
+      />
     </>
   );
 }

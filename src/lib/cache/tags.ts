@@ -5,6 +5,7 @@ export const publicCacheTags = {
   publicMenu: "alveto-public-menu",
   reservations: "alveto-public-reservations",
   seo: "alveto-public-seo",
+  siteSettings: "alveto-public-site-settings",
 } as const;
 
 export type PublicCacheTag =

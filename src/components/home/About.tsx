@@ -7,12 +7,17 @@ import Heading from "@/components/ui/Heading";
 import Section from "@/components/ui/Section";
 import Button from "@/components/ui/Button";
 import type { PublicReservationSettings } from "@/features/reservations/types";
+import type { PublicSiteSettings } from "@/features/site-settings/types";
 
 type AboutProps = Readonly<{
   reservationSettings: PublicReservationSettings | null;
+  siteSettings: PublicSiteSettings;
 }>;
 
-export default function About({ reservationSettings }: AboutProps) {
+export default function About({
+  reservationSettings,
+  siteSettings,
+}: AboutProps) {
   return (
     <Section id="about" className="bg-white">
       <Container>
@@ -46,7 +51,7 @@ export default function About({ reservationSettings }: AboutProps) {
           <FadeIn direction="right">
             <div className="lg:pl-8">
               <p className="mb-4 uppercase tracking-[6px] text-primary">
-                ABOUT ALVETO
+                ABOUT {siteSettings.businessName.toUpperCase()}
               </p>
 
               <Heading className="text-left">
@@ -56,9 +61,7 @@ export default function About({ reservationSettings }: AboutProps) {
               </Heading>
 
               <p className="mt-8 text-lg leading-9 text-text">
-                Alveto is a place where specialty coffee, thoughtfully crafted
-                brunch and signature desserts come together in a warm,
-                carefully designed atmosphere.
+                {siteSettings.shortBrandDescription}
               </p>
 
               <p className="mt-8 text-lg leading-9 text-text">

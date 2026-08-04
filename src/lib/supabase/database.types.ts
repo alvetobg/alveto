@@ -206,6 +206,50 @@ export type Database = {
           },
         ]
       }
+      business_hours: {
+        Row: {
+          closes_at: string | null
+          created_at: string
+          day_of_week: number
+          id: string
+          is_active: boolean
+          is_closed: boolean
+          opens_at: string | null
+          organization_id: string
+          updated_at: string
+        }
+        Insert: {
+          closes_at?: string | null
+          created_at?: string
+          day_of_week: number
+          id?: string
+          is_active?: boolean
+          is_closed?: boolean
+          opens_at?: string | null
+          organization_id: string
+          updated_at?: string
+        }
+        Update: {
+          closes_at?: string | null
+          created_at?: string
+          day_of_week?: number
+          id?: string
+          is_active?: boolean
+          is_closed?: boolean
+          opens_at?: string | null
+          organization_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "business_hours_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       categories: {
         Row: {
           created_at: string
@@ -248,6 +292,100 @@ export type Database = {
             foreignKeyName: "categories_organization_id_fkey"
             columns: ["organization_id"]
             isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      contact_settings: {
+        Row: {
+          address_line: string | null
+          city: string | null
+          country: string | null
+          country_code: string | null
+          created_at: string
+          google_maps_url: string | null
+          id: string
+          is_active: boolean
+          organization_id: string
+          public_email: string | null
+          public_phone: string | null
+          updated_at: string
+        }
+        Insert: {
+          address_line?: string | null
+          city?: string | null
+          country?: string | null
+          country_code?: string | null
+          created_at?: string
+          google_maps_url?: string | null
+          id?: string
+          is_active?: boolean
+          organization_id: string
+          public_email?: string | null
+          public_phone?: string | null
+          updated_at?: string
+        }
+        Update: {
+          address_line?: string | null
+          city?: string | null
+          country?: string | null
+          country_code?: string | null
+          created_at?: string
+          google_maps_url?: string | null
+          id?: string
+          is_active?: boolean
+          organization_id?: string
+          public_email?: string | null
+          public_phone?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "contact_settings_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: true
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      footer_settings: {
+        Row: {
+          copyright_text: string
+          created_at: string
+          id: string
+          is_active: boolean
+          legal_links: Json
+          navigation_links: Json
+          organization_id: string
+          updated_at: string
+        }
+        Insert: {
+          copyright_text: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          legal_links?: Json
+          navigation_links?: Json
+          organization_id: string
+          updated_at?: string
+        }
+        Update: {
+          copyright_text?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          legal_links?: Json
+          navigation_links?: Json
+          organization_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "footer_settings_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: true
             referencedRelation: "organizations"
             referencedColumns: ["id"]
           },
@@ -1102,6 +1240,88 @@ export type Database = {
           },
         ]
       }
+      site_settings: {
+        Row: {
+          business_name: string
+          created_at: string
+          id: string
+          is_active: boolean
+          organization_id: string
+          short_brand_description: string
+          temporarily_closed: boolean
+          updated_at: string
+        }
+        Insert: {
+          business_name: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          organization_id: string
+          short_brand_description: string
+          temporarily_closed?: boolean
+          updated_at?: string
+        }
+        Update: {
+          business_name?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          organization_id?: string
+          short_brand_description?: string
+          temporarily_closed?: boolean
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "site_settings_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: true
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      social_links: {
+        Row: {
+          created_at: string
+          display_order: number
+          id: string
+          is_active: boolean
+          organization_id: string
+          platform: string
+          updated_at: string
+          url: string | null
+        }
+        Insert: {
+          created_at?: string
+          display_order?: number
+          id?: string
+          is_active?: boolean
+          organization_id: string
+          platform: string
+          updated_at?: string
+          url?: string | null
+        }
+        Update: {
+          created_at?: string
+          display_order?: number
+          id?: string
+          is_active?: boolean
+          organization_id?: string
+          platform?: string
+          updated_at?: string
+          url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "social_links_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -1149,6 +1369,26 @@ export type Database = {
           twitter_image_width: number
           twitter_media_asset_id: string
           twitter_title: string
+        }[]
+      }
+      get_alveto_public_site_settings: {
+        Args: never
+        Returns: {
+          address_line: string
+          business_hours: Json
+          business_name: string
+          city: string
+          country: string
+          country_code: string
+          footer_copyright_text: string
+          footer_legal_links: Json
+          footer_navigation_links: Json
+          google_maps_url: string
+          public_email: string
+          public_phone: string
+          short_brand_description: string
+          social_links: Json
+          temporarily_closed: boolean
         }[]
       }
       get_alveto_published_builders: {
@@ -1339,6 +1579,32 @@ export type Database = {
         }
         Returns: string
       }
+      save_contact_settings: {
+        Args: {
+          target_address_line: string
+          target_business_hours: Json
+          target_city: string
+          target_country: string
+          target_country_code: string
+          target_google_maps_url: string
+          target_is_active: boolean
+          target_organization_id: string
+          target_public_email: string
+          target_public_phone: string
+          target_social_links: Json
+        }
+        Returns: string
+      }
+      save_footer_settings: {
+        Args: {
+          target_copyright_text: string
+          target_is_active: boolean
+          target_legal_links: Json
+          target_navigation_links: Json
+          target_organization_id: string
+        }
+        Returns: string
+      }
       save_gallery_item: {
         Args: {
           target_alt_text: string
@@ -1405,6 +1671,16 @@ export type Database = {
           target_twitter_description: string
           target_twitter_media_asset_id: string
           target_twitter_title: string
+        }
+        Returns: string
+      }
+      save_site_settings: {
+        Args: {
+          target_business_name: string
+          target_is_active: boolean
+          target_organization_id: string
+          target_short_brand_description: string
+          target_temporarily_closed: boolean
         }
         Returns: string
       }

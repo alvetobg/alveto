@@ -7,15 +7,25 @@ import Section from "@/components/ui/Section";
 import Heading from "@/components/ui/Heading";
 import Button from "@/components/ui/Button";
 import type { PublicReservationSettings } from "@/features/reservations/types";
+import type { PublicSiteSettings } from "@/features/site-settings/types";
 
 type ReservationProps = Readonly<{
   settings: PublicReservationSettings | null;
+  siteSettings: PublicSiteSettings;
 }>;
 
-export default function Reservation({ settings }: ReservationProps) {
+export default function Reservation({
+  settings,
+  siteSettings,
+}: ReservationProps) {
   if (!settings?.reservationsEnabled || !settings.reservationUrl) {
     return null;
   }
+
+  const phoneHref = siteSettings.phoneHref ?? settings.phoneHref;
+  const whatsappHref =
+    siteSettings.socialLinks.find((link) => link.platform === "whatsapp")?.url ??
+    settings.whatsappHref;
 
   return (
     <Section
@@ -56,14 +66,14 @@ export default function Reservation({ settings }: ReservationProps) {
                 {settings.primaryCtaLabel}
               </Button>
 
-              {settings.phoneHref ? (
-                <Button href={settings.phoneHref} variant="secondary">
+              {phoneHref ? (
+                <Button href={phoneHref} variant="secondary">
                   Call Us
                 </Button>
               ) : null}
 
-              {settings.whatsappHref ? (
-                <Button href={settings.whatsappHref} variant="secondary">
+              {whatsappHref ? (
+                <Button href={whatsappHref} variant="secondary">
                   WhatsApp
                 </Button>
               ) : null}

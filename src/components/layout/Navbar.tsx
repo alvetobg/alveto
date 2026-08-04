@@ -7,12 +7,17 @@ import { useCallback, useEffect, useState } from "react";
 import MobileMenu from "@/components/layout/MobileMenu";
 import Button from "@/components/ui/Button";
 import type { PublicReservationSettings } from "@/features/reservations/types";
+import type { PublicSiteSettings } from "@/features/site-settings/types";
 
 type NavbarProps = Readonly<{
   reservationSettings: PublicReservationSettings | null;
+  siteSettings: PublicSiteSettings;
 }>;
 
-export default function Navbar({ reservationSettings }: NavbarProps) {
+export default function Navbar({
+  reservationSettings,
+  siteSettings,
+}: NavbarProps) {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -44,12 +49,12 @@ export default function Navbar({ reservationSettings }: NavbarProps) {
       <div className="mx-auto flex h-[88px] max-w-7xl items-center justify-between px-6 md:px-8 lg:h-24 lg:px-12 xl:px-16">
         <Link
           href="/"
-          aria-label="ALVETO Home"
+          aria-label={`${siteSettings.businessName} Home`}
           className="shrink-0"
         >
           <Image
             src="/logos/alveto-wordmark.png"
-            alt="Alveto"
+            alt={siteSettings.businessName}
             width={132}
             height={32}
             sizes="132px"
@@ -116,6 +121,7 @@ export default function Navbar({ reservationSettings }: NavbarProps) {
         open={menuOpen}
         onClose={closeMenu}
         reservationSettings={reservationSettings}
+        siteSettings={siteSettings}
       />
     </header>
   );
