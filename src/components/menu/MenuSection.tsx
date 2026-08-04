@@ -11,6 +11,10 @@ import type {
   MenuProduct,
   PublishedMenuResult,
 } from "@/features/menu/types";
+import type {
+  PublicBuilder,
+  PublishedBuildersResult,
+} from "@/features/builders/types";
 
 import Container from "@/components/ui/Container";
 import ProductModal from "@/components/menu/ProductModal";
@@ -18,24 +22,47 @@ import ProductModal from "@/components/menu/ProductModal";
 type MenuSectionProps = Readonly<{
   menu: readonly MenuCategory[];
   state: PublishedMenuResult["state"];
+  builders: readonly PublicBuilder[];
+  builderState: PublishedBuildersResult["state"];
 }>;
 
-export default function MenuSection({ menu, state }: MenuSectionProps) {
+export default function MenuSection({
+  menu,
+  state,
+  builders,
+  builderState,
+}: MenuSectionProps) {
   const [selectedProduct, setSelectedProduct] = useState<MenuProduct | null>(null);
   const [search, setSearch] = useState("");
   const searchInputRef = useRef<HTMLInputElement>(null);
   const query = search.trim();
   const hasSearchValue = search.length > 0;
   const searchActive = query.length > 0;
+  const displayedMenu = useMemo<readonly MenuCategory[]>(
+    () =>
+      builders.length > 0 &&
+      !menu.some((category) => category.kind === "builder")
+        ? [
+            ...menu,
+            {
+              id: "create-your-own",
+              title: "Create Your Own",
+              kind: "builder",
+              products: [],
+            },
+          ]
+        : menu,
+    [builders.length, menu],
+  );
 
   const filteredMenu = useMemo(() => {
     if (!query) {
-      return menu;
+      return displayedMenu;
     }
 
     const normalizedQuery = query.toLowerCase();
 
-    return menu
+    return displayedMenu
       .filter((category) => category.kind !== "builder")
       .map((category) => ({
         ...category,
@@ -46,7 +73,7 @@ export default function MenuSection({ menu, state }: MenuSectionProps) {
         ),
       }))
       .filter((category) => category.products.length > 0);
-  }, [menu, query]);
+  }, [displayedMenu, query]);
 
   const navigationCategories = useMemo(
     () =>
@@ -131,7 +158,7 @@ export default function MenuSection({ menu, state }: MenuSectionProps) {
           </div>
         </div>
 
-        {!searchActive && menu.length === 0 ? (
+        {!searchActive && displayedMenu.length === 0 ? (
           <div className="mx-auto max-w-3xl rounded-[32px] border border-black/5 bg-white px-6 py-14 text-center shadow-[0_10px_35px_rgba(0,0,0,0.05)] sm:px-10">
             <p className="text-xs font-semibold uppercase tracking-[4px] text-primary">
               {state === "error" ? "Temporarily unavailable" : "Coming soon"}
@@ -182,7 +209,10 @@ export default function MenuSection({ menu, state }: MenuSectionProps) {
 
               {category.kind === "builder" ? (
                 <div className="mx-auto max-w-6xl">
-                  <CreateYourOwn />
+                  <CreateYourOwn
+                    builders={builders}
+                    state={builderState}
+                  />
                 </div>
               ) : (
                 <div className="mx-auto max-w-5xl space-y-2">

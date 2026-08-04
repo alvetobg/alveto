@@ -2,6 +2,7 @@
 
 type BuilderOptionProps = {
   name: string;
+  description?: string | null;
   price: number;
   selected: boolean;
   disabled?: boolean;
@@ -10,6 +11,7 @@ type BuilderOptionProps = {
 
 export default function BuilderOption({
   name,
+  description,
   price,
   selected,
   disabled = false,
@@ -49,7 +51,7 @@ export default function BuilderOption({
           </h5>
 
           <p className="mt-1 text-sm text-neutral-500">
-            Premium ingredient
+            {description || "Premium ingredient"}
           </p>
         </div>
       </div>

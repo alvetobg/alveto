@@ -4,6 +4,7 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import MenuHero from "@/components/menu/MenuHero";
 import MenuSection from "@/components/menu/MenuSection";
+import { getPublishedBuilders } from "@/features/builders/service";
 import { getPublishedMenu } from "@/features/menu/service";
 import { getPublicReservationSettings } from "@/features/reservations/service";
 import { site } from "@/lib/site";
@@ -58,9 +59,10 @@ export const metadata: Metadata = {
 };
 
 export default async function MenuPage() {
-  const [menuResult, reservationResult] = await Promise.all([
+  const [menuResult, reservationResult, builderResult] = await Promise.all([
     getPublishedMenu(),
     getPublicReservationSettings(),
+    getPublishedBuilders(),
   ]);
   const reservationSettings = reservationResult.settings;
 
@@ -69,7 +71,12 @@ export default async function MenuPage() {
       <Navbar reservationSettings={reservationSettings} />
       <main id="main-content" tabIndex={-1} className="focus:outline-none">
         <MenuHero />
-        <MenuSection menu={menuResult.menu} state={menuResult.state} />
+        <MenuSection
+          menu={menuResult.menu}
+          state={menuResult.state}
+          builders={builderResult.builders}
+          builderState={builderResult.state}
+        />
       </main>
       <Footer reservationSettings={reservationSettings} />
     </>
