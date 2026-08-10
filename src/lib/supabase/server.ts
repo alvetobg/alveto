@@ -1,6 +1,6 @@
 import "server-only";
 
-import { getServerEnvironment } from "@/lib/env/server";
+import { getPublicContentEnvironment } from "@/lib/env/server";
 import type { Database } from "@/lib/supabase/database.types";
 
 type PublishedMenuRpcRow =
@@ -31,6 +31,8 @@ type SignedImage = Readonly<{
 type StorageSignedUrlPayload = Readonly<{
   signedURL?: unknown;
 }>;
+
+const publicRequestTimeoutMs = 8_000;
 
 export class SupabaseServerClientError extends Error {
   constructor(
@@ -74,8 +76,23 @@ async function parseJson(response: Response, operation: SupabaseServerClientErro
   }
 }
 
+async function fetchPublicSupabase(
+  operation: SupabaseServerClientError["operation"],
+  requestUrl: URL,
+  init: RequestInit,
+) {
+  try {
+    return await fetch(requestUrl, {
+      ...init,
+      signal: AbortSignal.timeout(publicRequestTimeoutMs),
+    });
+  } catch {
+    throw new SupabaseServerClientError(operation);
+  }
+}
+
 export function createSupabaseServerClient() {
-  const environment = getServerEnvironment();
+  const environment = getPublicContentEnvironment();
   const headers = createHeaders(environment.supabasePublishableKey);
 
   return {
@@ -88,7 +105,7 @@ export function createSupabaseServerClient() {
       requestHeaders.set("Content-Type", "application/json");
 
       const payload = await parseJson(
-        await fetch(requestUrl, {
+        await fetchPublicSupabase("public-site-settings", requestUrl, {
           method: "POST",
           headers: requestHeaders,
           body: "{}",
@@ -113,7 +130,7 @@ export function createSupabaseServerClient() {
       requestHeaders.set("Content-Type", "application/json");
 
       const payload = await parseJson(
-        await fetch(requestUrl, {
+        await fetchPublicSupabase("public-seo", requestUrl, {
           method: "POST",
           headers: requestHeaders,
           body: "{}",
@@ -138,7 +155,7 @@ export function createSupabaseServerClient() {
       requestHeaders.set("Content-Type", "application/json");
 
       const payload = await parseJson(
-        await fetch(requestUrl, {
+        await fetchPublicSupabase("published-builders", requestUrl, {
           method: "POST",
           headers: requestHeaders,
           body: "{}",
@@ -165,7 +182,7 @@ export function createSupabaseServerClient() {
       requestHeaders.set("Content-Type", "application/json");
 
       const payload = await parseJson(
-        await fetch(requestUrl, {
+        await fetchPublicSupabase("public-reservations", requestUrl, {
           method: "POST",
           headers: requestHeaders,
           body: "{}",
@@ -190,7 +207,7 @@ export function createSupabaseServerClient() {
       requestHeaders.set("Content-Type", "application/json");
 
       const payload = await parseJson(
-        await fetch(requestUrl, {
+        await fetchPublicSupabase("published-gallery", requestUrl, {
           method: "POST",
           headers: requestHeaders,
           body: "{}",
@@ -215,7 +232,7 @@ export function createSupabaseServerClient() {
       requestHeaders.set("Content-Type", "application/json");
 
       const payload = await parseJson(
-        await fetch(requestUrl, {
+        await fetchPublicSupabase("published-homepage", requestUrl, {
           method: "POST",
           headers: requestHeaders,
           body: "{}",
@@ -240,7 +257,7 @@ export function createSupabaseServerClient() {
       requestHeaders.set("Content-Type", "application/json");
 
       const payload = await parseJson(
-        await fetch(requestUrl, {
+        await fetchPublicSupabase("published-menu", requestUrl, {
           method: "POST",
           headers: requestHeaders,
           body: "{}",
@@ -268,7 +285,8 @@ export function createSupabaseServerClient() {
       signingHeaders.set("Content-Type", "application/json");
 
       const payload = await parseJson(
-        await fetch(
+        await fetchPublicSupabase(
+          "sign-images",
           new URL(
             "/storage/v1/object/sign/product-images",
             environment.supabaseUrl,

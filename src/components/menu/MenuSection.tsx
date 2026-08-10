@@ -1,5 +1,6 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { useMemo, useRef, useState } from "react";
 import CategoryHero from "@/components/menu/CategoryHero";
 import MenuItem from "@/components/menu/MenuItem";
@@ -17,7 +18,9 @@ import type {
 } from "@/features/builders/types";
 
 import Container from "@/components/ui/Container";
-import ProductModal from "@/components/menu/ProductModal";
+const ProductModal = dynamic(() => import("@/components/menu/ProductModal"), {
+  ssr: false,
+});
 
 type MenuSectionProps = Readonly<{
   menu: readonly MenuCategory[];
@@ -234,11 +237,13 @@ export default function MenuSection({
         )}
       </Container>
 
-      <ProductModal
-        open={selectedProduct !== null}
-        product={selectedProduct}
-        onClose={() => setSelectedProduct(null)}
-      />
+      {selectedProduct && (
+        <ProductModal
+          open
+          product={selectedProduct}
+          onClose={() => setSelectedProduct(null)}
+        />
+      )}
     </section>
   );
 }

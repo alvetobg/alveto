@@ -28,7 +28,20 @@
     "typescript": "^5"
   },
   "overrides": {
-    "next@16.2.12": {
+    "eslint": {
+      ".": "$eslint",
+      "@eslint/eslintrc": {
+        "js-yaml": "4.3.1"
+      },
+      "minimatch": {
+        "brace-expansion": "1.1.18"
+      }
+    },
+    "@typescript-eslint/typescript-estree@8.62.1": {
+      "minimatch": {
+        "brace-expansion": "5.0.9"
+      }
+    },    "next@16.2.12": {
       "postcss": "8.5.23",
       "sharp": "0.35.0"
     }

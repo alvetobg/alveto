@@ -1,8 +1,11 @@
 import "server-only";
 
-type ServerEnvironment = Readonly<{
+type PublicContentEnvironment = Readonly<{
   supabaseUrl: string;
   supabasePublishableKey: string;
+}>;
+
+type RevalidationEnvironment = Readonly<{
   revalidateSecret: string;
 }>;
 
@@ -37,33 +40,29 @@ function getValidatedSupabaseUrl(value: string | undefined) {
   }
 }
 
-export function getServerEnvironment(): ServerEnvironment {
+export function getPublicContentEnvironment(): PublicContentEnvironment {
   const supabaseUrl = getValidatedSupabaseUrl(process.env.SUPABASE_URL);
   const supabasePublishableKey =
     process.env.SUPABASE_PUBLISHABLE_KEY?.trim();
-  const revalidateSecret = process.env.REVALIDATE_SECRET?.trim();
-  const invalidVariables = [
-    ...(!supabaseUrl ? ["SUPABASE_URL"] : []),
-    ...(!supabasePublishableKey ? ["SUPABASE_PUBLISHABLE_KEY"] : []),
-    ...(!revalidateSecret || revalidateSecret.length < 32
-      ? ["REVALIDATE_SECRET"]
-      : []),
-  ];
 
-  if (
-    !supabaseUrl ||
-    !supabasePublishableKey ||
-    !revalidateSecret ||
-    revalidateSecret.length < 32
-  ) {
-    throw new Error(
-      `Invalid server environment configuration: ${invalidVariables.join(", ")}`,
-    );
+  if (!supabaseUrl || !supabasePublishableKey) {
+    throw new Error("Invalid public content environment configuration.");
   }
 
   return {
     supabaseUrl,
     supabasePublishableKey,
+  };
+}
+
+export function getRevalidationEnvironment(): RevalidationEnvironment {
+  const revalidateSecret = process.env.REVALIDATE_SECRET?.trim();
+
+  if (!revalidateSecret || revalidateSecret.length < 32) {
+    throw new Error("Invalid revalidation environment configuration.");
+  }
+
+  return {
     revalidateSecret,
   };
 }

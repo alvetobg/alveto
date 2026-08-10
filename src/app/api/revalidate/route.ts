@@ -7,7 +7,7 @@ import {
   publicCacheTagValues,
   type PublicCacheTag,
 } from "@/lib/cache/tags";
-import { getServerEnvironment } from "@/lib/env/server";
+import { getRevalidationEnvironment } from "@/lib/env/server";
 
 export const runtime = "nodejs";
 
@@ -120,7 +120,7 @@ export async function POST(request: Request) {
   let secret: string;
 
   try {
-    secret = getServerEnvironment().revalidateSecret;
+    secret = getRevalidationEnvironment().revalidateSecret;
   } catch {
     return NextResponse.json(
       { error: "Service unavailable" },
