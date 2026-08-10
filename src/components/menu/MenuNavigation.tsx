@@ -70,7 +70,7 @@ export default function MenuNavigation({
                   block: "start",
                 });
               }}
-              className={`flex-shrink-0 whitespace-nowrap rounded-full px-5 py-3 text-xs font-semibold transition-all duration-300 md:px-6 md:text-sm ${
+              className={`min-h-11 flex-shrink-0 whitespace-nowrap rounded-full px-5 py-3 text-xs font-semibold transition-all duration-300 md:px-6 md:text-sm ${
                 activeCategory === category.id
                   ? "bg-primary text-white shadow-lg"
                   : "text-neutral-600 hover:bg-neutral-100 hover:text-dark"

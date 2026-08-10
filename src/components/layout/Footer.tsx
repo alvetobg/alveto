@@ -101,9 +101,9 @@ export default function Footer({
           {/* Visit */}
 
           <div className="text-center md:text-left">
-            <h4 className="mb-5 text-xs font-semibold uppercase tracking-[4px] text-white/40">
+            <h3 className="mb-5 text-xs font-semibold uppercase tracking-[4px] text-white/40">
               Visit
-            </h4>
+            </h3>
 
             {addressLines.length > 0 ? (
               siteSettings.googleMapsUrl ? (
@@ -134,9 +134,9 @@ export default function Footer({
           {/* Hours */}
 
           <div className="text-center md:text-left">
-            <h4 className="mb-5 text-xs font-semibold uppercase tracking-[4px] text-white/40">
+            <h3 className="mb-5 text-xs font-semibold uppercase tracking-[4px] text-white/40">
               Hours
-            </h4>
+            </h3>
 
             <div className="space-y-3 leading-8 text-white/80">
               {hours.map((group) => (
@@ -151,9 +151,9 @@ export default function Footer({
           {/* Contact */}
 
           <div className="text-center md:text-left">
-            <h4 className="mb-5 text-xs font-semibold uppercase tracking-[4px] text-white/40">
+            <h3 className="mb-5 text-xs font-semibold uppercase tracking-[4px] text-white/40">
               Contact
-            </h4>
+            </h3>
 
             <div className="space-y-3">
               {email ? (

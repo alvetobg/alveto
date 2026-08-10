@@ -11,8 +11,6 @@ import { createPageMetadata } from "@/features/seo/metadata";
 import { getPublicSeo } from "@/features/seo/service";
 import { getPublicSiteSettings } from "@/features/site-settings/service";
 
-export const dynamic = "force-dynamic";
-
 export async function generateMetadata(): Promise<Metadata> {
   return createPageMetadata("menu", await getPublicSeo());
 }

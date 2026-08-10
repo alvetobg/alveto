@@ -7,6 +7,8 @@ import type { PublishedHomepageResult } from "@/features/homepage/types";
 import { publicCacheTags } from "@/lib/cache/tags";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
+const signedImageCacheRefreshSeconds = 12 * 60 * 60;
+
 function getErrorDiagnostic(error: unknown) {
   const status =
     typeof error === "object" &&
@@ -33,6 +35,7 @@ const getCachedPublishedHomepage = unstable_cache(
   [publicCacheTags.homepage],
   {
     tags: [publicCacheTags.homepage],
+    revalidate: signedImageCacheRefreshSeconds,
   },
 );
 

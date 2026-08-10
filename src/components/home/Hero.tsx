@@ -77,11 +77,16 @@ export default function Hero({
           </>
         ) : (
           <FadeIn delay={0.2}>
-            <p className="mt-6 max-w-xl text-[15px] leading-7 text-white/85 md:mt-12 md:max-w-2xl md:text-xl md:leading-9">
-              {state === "error"
-                ? "Homepage content is temporarily unavailable."
-                : "New homepage content is coming soon."}
-            </p>
+            <div>
+              <h1 className="sr-only">
+                ALVETO Coffee, Brunch, Desserts and Cocktails
+              </h1>
+              <p className="mt-6 max-w-xl text-[15px] leading-7 text-white/85 md:mt-12 md:max-w-2xl md:text-xl md:leading-9">
+                {state === "error"
+                  ? "Homepage content is temporarily unavailable."
+                  : "New homepage content is coming soon."}
+              </p>
+            </div>
           </FadeIn>
         )}
 

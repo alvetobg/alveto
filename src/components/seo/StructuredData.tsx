@@ -48,32 +48,45 @@ export default function StructuredData({
       : {}),
   };
   const socialLinks = siteSettings.socialLinks.map((link) => link.url);
+  const businessId = `${site.domain}/#business`;
   const data = {
     "@context": "https://schema.org",
-    "@type": "CafeOrCoffeeShop",
-    "@id": `${site.domain}/#business`,
-    name: siteSettings.businessName,
-    description: siteSettings.shortBrandDescription,
-    image: `${site.domain}/images/hero.jpg`,
-    url: site.domain,
-    menu: `${site.domain}/menu`,
-    ...(phoneNumber ? { telephone: phoneNumber } : {}),
-    ...(email ? { email } : {}),
-    servesCuisine: [
-      "Breakfast",
-      "Brunch",
-      "Desserts",
-      "Coffee",
-      "Cocktails",
+    "@graph": [
+      {
+        "@type": "WebSite",
+        "@id": `${site.domain}/#website`,
+        url: site.domain,
+        name: siteSettings.businessName,
+        publisher: { "@id": businessId },
+      },
+      {
+        "@type": "CafeOrCoffeeShop",
+        "@id": businessId,
+        name: siteSettings.businessName,
+        description: siteSettings.shortBrandDescription,
+        image: `${site.domain}/images/hero.jpg`,
+        logo: `${site.domain}/logos/alveto-wordmark.png`,
+        url: site.domain,
+        menu: `${site.domain}/menu`,
+        ...(phoneNumber ? { telephone: phoneNumber } : {}),
+        ...(email ? { email } : {}),
+        servesCuisine: [
+          "Breakfast",
+          "Brunch",
+          "Desserts",
+          "Coffee",
+          "Cocktails",
+        ],
+        ...(Object.keys(address).length > 1 ? { address } : {}),
+        ...(openingHours.length > 0
+          ? { openingHoursSpecification: openingHours }
+          : {}),
+        ...(siteSettings.googleMapsUrl
+          ? { hasMap: siteSettings.googleMapsUrl }
+          : {}),
+        ...(socialLinks.length > 0 ? { sameAs: socialLinks } : {}),
+      },
     ],
-    ...(Object.keys(address).length > 1 ? { address } : {}),
-    ...(openingHours.length > 0
-      ? { openingHoursSpecification: openingHours }
-      : {}),
-    ...(siteSettings.googleMapsUrl
-      ? { hasMap: siteSettings.googleMapsUrl }
-      : {}),
-    ...(socialLinks.length > 0 ? { sameAs: socialLinks } : {}),
   };
 
   const serializedData = JSON.stringify(data).replace(/</g, "\\u003c");

@@ -58,13 +58,15 @@ function isSafeCanonical(value: string | null, pageKey: PublicSeoPageKey) {
 
   try {
     const url = new URL(value);
+    const expectedPathname = pageKey === "menu" ? "/menu" : "/";
+
     return (
       url.origin === "https://alveto-bg.com" &&
       !url.username &&
       !url.password &&
       !url.search &&
       !url.hash &&
-      (pageKey !== "global" || url.pathname === "/")
+      url.pathname === expectedPathname
     );
   } catch {
     return false;

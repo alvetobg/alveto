@@ -7,11 +7,16 @@ import type { PublishedGalleryResult } from "@/features/gallery/types";
 import { publicCacheTags } from "@/lib/cache/tags";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
+const signedImageCacheRefreshSeconds = 30 * 60;
+
 const getCachedPublishedGallery = unstable_cache(
   async () =>
     createPublishedGalleryRepository(createSupabaseServerClient()).list(),
   [publicCacheTags.gallery],
-  { tags: [publicCacheTags.gallery] },
+  {
+    tags: [publicCacheTags.gallery],
+    revalidate: signedImageCacheRefreshSeconds,
+  },
 );
 
 export async function getPublishedGallery(): Promise<PublishedGalleryResult> {

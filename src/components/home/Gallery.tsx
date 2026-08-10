@@ -48,7 +48,6 @@ export default function Gallery({ collections }: GalleryProps) {
                           alt={item.altText}
                           fill
                           sizes="(max-width: 639px) calc(100vw - 48px), (max-width: 1023px) calc(50vw - 42px), 360px"
-                          unoptimized
                           className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
                         />
                       </div>

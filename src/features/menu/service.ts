@@ -7,6 +7,8 @@ import type { PublishedMenuResult } from "@/features/menu/types";
 import { publicCacheTags } from "@/lib/cache/tags";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
+const signedImageCacheRefreshSeconds = 12 * 60 * 60;
+
 type DiagnosticValue = string | number | boolean | null;
 
 function getDiagnosticValue(error: unknown, property: string) {
@@ -51,6 +53,7 @@ const getCachedPublishedMenu = unstable_cache(
   [publicCacheTags.publicMenu],
   {
     tags: [publicCacheTags.publicMenu],
+    revalidate: signedImageCacheRefreshSeconds,
   },
 );
 

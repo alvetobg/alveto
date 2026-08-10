@@ -44,6 +44,18 @@ function firstValue<T>(...values: readonly (T | null | undefined)[]) {
   return values.find((value): value is T => value !== null && value !== undefined);
 }
 
+export function isPublicPageIndexable(
+  pageKey: PublicPageKey,
+  result: PublicSeoResult,
+) {
+  return (
+    firstValue(
+      result.settings[pageKey]?.robotsIndex,
+      result.settings.global?.robotsIndex,
+    ) ?? true
+  );
+}
+
 function resolveImageUrl(image: PublicSeoImage) {
   return `/seo-image/${encodeURIComponent(image.id)}`;
 }
@@ -115,10 +127,7 @@ export function createPageMetadata(
     ),
     defaults.image,
   );
-  const robotsIndex = firstValue(
-    routeSettings?.robotsIndex,
-    globalSettings?.robotsIndex,
-  ) ?? true;
+  const robotsIndex = isPublicPageIndexable(pageKey, result);
   const robotsFollow = firstValue(
     routeSettings?.robotsFollow,
     globalSettings?.robotsFollow,
