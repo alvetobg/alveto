@@ -37,12 +37,13 @@ export default async function Home() {
   const siteSettings = siteSettingsResult.settings;
 
   return (
-    <>
+    <div className="homepage-v2 bg-[var(--atelier-ivory)] text-[var(--atelier-ink)]">
       <StructuredData
         reservationSettings={reservationSettings}
         siteSettings={siteSettings}
       />
       <Navbar
+        appearance="atelier"
         reservationSettings={reservationSettings}
         siteSettings={siteSettings}
       />
@@ -51,6 +52,7 @@ export default async function Home() {
           content={homepageResult.content?.hero ?? null}
           state={homepageResult.state}
           reservationSettings={reservationSettings}
+          siteSettings={siteSettings}
         />
         <Experience />
         {featuredSection ? (
@@ -65,16 +67,20 @@ export default async function Home() {
           reservationSettings={reservationSettings}
           siteSettings={siteSettings}
         />
-        <Gallery collections={galleryResult.collections} />
+        <Gallery
+          collections={galleryResult.collections}
+          state={galleryResult.state}
+        />
         <Reservation
           settings={reservationSettings}
           siteSettings={siteSettings}
         />
       </main>
       <Footer
+        appearance="atelier"
         reservationSettings={reservationSettings}
         siteSettings={siteSettings}
       />
-    </>
+    </div>
   );
 }

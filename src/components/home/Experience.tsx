@@ -1,100 +1,124 @@
 import Image from "next/image";
 
-import FadeIn from "@/components/animations/FadeIn";
+import AtelierMotion from "@/components/home/AtelierMotion";
 import Container from "@/components/ui/Container";
-import Heading from "@/components/ui/Heading";
-import Section from "@/components/ui/Section";
+
+const moments = [
+  {
+    title: "Morning",
+    text: "Fresh coffee, artisan breakfast and slow mornings made to be enjoyed.",
+    image: "/images/experience/morning.webp",
+    frame:
+      "rounded-[1.75rem] rounded-br-[4.5rem] sm:rounded-[2.25rem] sm:rounded-br-[7rem]",
+  },
+  {
+    title: "Afternoon",
+    text: "Brunch favorites, waffles and signature creations for every taste.",
+    image: "/images/experience/afternoon.webp",
+    frame:
+      "rounded-[1.75rem] rounded-tl-[4.5rem] sm:rounded-[2.25rem] sm:rounded-tl-[7rem]",
+  },
+  {
+    title: "Evening",
+    text: "Cocktails, desserts and warm conversations as the day comes to an end.",
+    image: "/images/experience/evening.webp",
+    frame:
+      "rounded-[1.75rem] rounded-tr-[4.5rem] sm:rounded-[2.25rem] sm:rounded-tr-[7rem]",
+  },
+] as const;
 
 export default function Experience() {
   return (
-    <Section id="experience" className="bg-[#F7F4EF]">
+    <section
+      id="experience"
+      aria-labelledby="experience-title"
+      className="scroll-mt-20 bg-[var(--atelier-ivory)] py-24 sm:py-28 lg:py-36"
+    >
       <Container>
-        <p className="mb-4 text-center uppercase tracking-[6px] text-primary">
-          ALVETO MOMENTS
-        </p>
+        <header className="grid items-end gap-7 border-b border-[var(--atelier-line)] pb-10 lg:grid-cols-12 lg:gap-8 lg:pb-14">
+          <div className="lg:col-span-4">
+            <p className="flex items-center gap-3 text-xs font-semibold uppercase tracking-[0.22em] text-[var(--atelier-ink-soft)]">
+              <span className="h-2 w-2 rounded-full bg-[var(--atelier-coral)]" />
+              Alveto moments
+            </p>
+          </div>
 
-        <Heading>
-          Every Moment Has a Flavor
-        </Heading>
+          <div className="lg:col-span-8">
+            <h2
+              id="experience-title"
+              className="max-w-[13ch] font-[family-name:var(--font-display)] text-[clamp(2.75rem,7vw,6.75rem)] font-semibold leading-[0.94] tracking-[-0.055em] text-balance"
+            >
+              Every Moment Has a Flavor
+            </h2>
+            <p className="mt-6 max-w-2xl text-base leading-8 text-[var(--atelier-ink-soft)] sm:text-lg">
+              From your first coffee of the morning to the last cocktail of the
+              evening.
+            </p>
+          </div>
+        </header>
 
-        <p className="mx-auto mt-6 mb-16 max-w-2xl text-center text-lg leading-8 text-gray-600 md:mb-20">
-          From your first coffee of the morning to the last cocktail of the
-          evening.
-        </p>
-
-        <div className="space-y-8 md:space-y-12">
-          <FadeIn>
-            <Moment
-              image="/images/experience/morning.webp"
-              title="Morning"
-              text="Fresh coffee, artisan breakfast and slow mornings made to be enjoyed."
-            />
-          </FadeIn>
-
-          <FadeIn delay={0.15}>
-            <Moment
-              image="/images/experience/afternoon.webp"
-              title="Afternoon"
-              text="Brunch favorites, waffles and signature creations for every taste."
-            />
-          </FadeIn>
-
-          <FadeIn delay={0.3}>
-            <Moment
-              image="/images/experience/evening.webp"
-              title="Evening"
-              text="Cocktails, desserts and warm conversations as the day comes to an end."
-            />
-          </FadeIn>
+        <div className="mt-16 space-y-24 sm:mt-20 sm:space-y-28 lg:mt-28 lg:space-y-36">
+          {moments.map((moment, index) => (
+            <Moment key={moment.title} {...moment} index={index} />
+          ))}
         </div>
       </Container>
-    </Section>
+    </section>
   );
 }
 
-function Moment({
-  image,
-  title,
-  text,
-}: {
-  image: string;
-  title: string;
-  text: string;
-}) {
+type MomentProps = Readonly<(typeof moments)[number] & { index: number }>;
+
+function Moment({ image, title, text, frame, index }: MomentProps) {
+  const mediaPlacement =
+    index % 2 === 0
+      ? "lg:col-span-8 lg:col-start-1"
+      : "lg:col-span-8 lg:col-start-5";
+  const copyPlacement =
+    index % 2 === 0
+      ? "lg:col-span-4 lg:col-start-9 lg:row-start-1"
+      : "lg:col-span-4 lg:col-start-1 lg:row-start-1";
+
   return (
-    <article className="group relative h-[460px] overflow-hidden rounded-[28px] sm:h-[560px] sm:rounded-[36px] lg:h-[650px] lg:rounded-[42px] shadow-[0_20px_60px_rgba(0,0,0,0.08)]">
-
-      <Image
-        src={image}
-        alt={title}
-        fill
-        quality={85}
-        sizes="(max-width: 767px) calc(100vw - 48px), (max-width: 1023px) calc(100vw - 64px), 1184px"
-        className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.07]"
-      />
-
-      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-transparent transition-opacity duration-500 group-hover:opacity-90" />
-
-      <div className="absolute inset-x-0 bottom-0 p-5 sm:p-8 lg:p-10">
-
-        <div className="max-w-xl rounded-[28px] border border-white/15 bg-white/10 p-6 text-white shadow-[0_20px_50px_rgba(0,0,0,0.25)] backdrop-blur-xl transition-all duration-500 group-hover:bg-white/15 sm:p-8">
-
-          <p className="mb-3 text-xs font-semibold uppercase tracking-[4px] text-white/70">
-            ALVETO MOMENT
-          </p>
-
-          <h3 className="text-3xl font-extrabold tracking-tight sm:text-4xl lg:text-5xl">
-            {title}
-          </h3>
-
-          <p className="mt-5 text-base leading-7 text-white/90 sm:text-lg sm:leading-8">
-            {text}
-          </p>
-
-        </div>
-
+    <article className="grid min-w-0 items-center gap-9 lg:grid-cols-12 lg:gap-12">
+      <div className={"min-w-0 " + copyPlacement}>
+        <p
+          aria-hidden="true"
+          className="font-[family-name:var(--font-display)] text-6xl font-semibold leading-none tracking-[-0.06em] text-[var(--atelier-coral)] sm:text-7xl"
+        >
+          {String(index + 1).padStart(2, "0")}
+        </p>
+        <p className="mt-5 text-xs font-semibold uppercase tracking-[0.2em] text-[var(--atelier-ink-soft)]">
+          Alveto moment
+        </p>
+        <h3 className="mt-4 font-[family-name:var(--font-display)] text-4xl font-semibold leading-none tracking-[-0.045em] sm:text-5xl lg:text-6xl">
+          {title}
+        </h3>
+        <p className="mt-6 max-w-md text-base leading-8 text-[var(--atelier-ink-soft)] sm:text-lg">
+          {text}
+        </p>
       </div>
 
+      <AtelierMotion
+        direction={index % 2 === 0 ? "left" : "right"}
+        className={"min-w-0 " + mediaPlacement}
+      >
+        <div
+          className={
+            "group relative aspect-[4/5] overflow-hidden bg-[var(--atelier-ivory-deep)] shadow-[0_24px_70px_rgba(34,34,34,0.1)] sm:aspect-[16/11] lg:aspect-[16/10] " +
+            frame
+          }
+        >
+          <Image
+            src={image}
+            alt={title + " at Alveto"}
+            fill
+            quality={85}
+            sizes="(max-width: 1023px) calc(100vw - 48px), 66vw"
+            className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.025] motion-reduce:transform-none"
+          />
+        </div>
+      </AtelierMotion>
     </article>
   );
 }

@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 
 import Container from "@/components/ui/Container";
 import Button from "@/components/ui/Button";
@@ -10,11 +11,13 @@ import {
 import type { PublicSiteSettings } from "@/features/site-settings/types";
 
 type FooterProps = Readonly<{
+  appearance?: "classic" | "atelier";
   reservationSettings: PublicReservationSettings | null;
   siteSettings: PublicSiteSettings;
 }>;
 
 export default function Footer({
+  appearance = "classic",
   reservationSettings,
   siteSettings,
 }: FooterProps) {
@@ -38,6 +41,211 @@ export default function Footer({
       key: `legal-${link.label}-${link.url}`,
     })),
   ];
+
+  if (appearance === "atelier") {
+    return (
+      <footer className="bg-[var(--atelier-ink-deep)] text-[var(--atelier-ivory)]">
+        <Container>
+          <div className="grid gap-10 border-b border-white/16 py-20 sm:py-24 lg:grid-cols-12 lg:items-end lg:gap-12 lg:py-28">
+            <div className="lg:col-span-5">
+              <Image
+                src="/logos/alveto-wordmark.png"
+                alt={siteSettings.businessName}
+                width={360}
+                height={88}
+                sizes="(max-width: 639px) 220px, 320px"
+                className="h-auto w-[220px] sm:w-80"
+              />
+            </div>
+
+            <div className="min-w-0 lg:col-span-7">
+              <h2 className="max-w-[11ch] font-[family-name:var(--font-display)] text-[clamp(2.75rem,6vw,6rem)] font-semibold leading-[0.94] tracking-[-0.055em] text-balance">
+                See You at {siteSettings.businessName}
+              </h2>
+              <p className="mt-6 max-w-2xl text-base leading-8 text-[var(--atelier-ivory)]/72 sm:text-lg">
+                {siteSettings.shortBrandDescription}
+              </p>
+
+              {reservationSettings?.reservationsEnabled &&
+              reservationSettings.reservationUrl ? (
+                <div className="mt-8">
+                  <Button
+                    href={reservationSettings.reservationUrl}
+                    variant="atelier"
+                    className="min-h-12 w-full rounded-full px-8 sm:w-auto"
+                  >
+                    {reservationSettings.primaryCtaLabel}
+                  </Button>
+                </div>
+              ) : null}
+            </div>
+          </div>
+
+          <div className="grid gap-12 py-16 sm:grid-cols-2 lg:grid-cols-4 lg:gap-10 lg:py-20">
+            <section>
+              <h3 className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--atelier-ivory)]/58">
+                Explore
+              </h3>
+              <nav aria-label="Footer primary navigation" className="mt-5">
+                <ul className="space-y-1">
+                  <li>
+                    <Link
+                      href="/menu"
+                      className="inline-flex min-h-11 items-center text-[var(--atelier-ivory)]/82 transition-colors hover:text-[var(--atelier-coral)]"
+                    >
+                      Menu
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      href="/#experience"
+                      className="inline-flex min-h-11 items-center text-[var(--atelier-ivory)]/82 transition-colors hover:text-[var(--atelier-coral)]"
+                    >
+                      Experience
+                    </Link>
+                  </li>
+                  {reservationSettings?.reservationsEnabled &&
+                  reservationSettings.reservationUrl ? (
+                    <li>
+                      <a
+                        href={reservationSettings.reservationUrl}
+                        target={
+                          reservationSettings.reservationUrl.startsWith("http")
+                            ? "_blank"
+                            : undefined
+                        }
+                        rel={
+                          reservationSettings.reservationUrl.startsWith("http")
+                            ? "noopener noreferrer"
+                            : undefined
+                        }
+                        className="inline-flex min-h-11 items-center text-[var(--atelier-ivory)]/82 transition-colors hover:text-[var(--atelier-coral)]"
+                      >
+                        {reservationSettings.primaryCtaLabel}
+                      </a>
+                    </li>
+                  ) : null}
+                </ul>
+              </nav>
+            </section>
+
+            <section>
+              <h3 className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--atelier-ivory)]/58">
+                Visit
+              </h3>
+              {addressLines.length > 0 ? (
+                siteSettings.googleMapsUrl ? (
+                  <a
+                    href={siteSettings.googleMapsUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-5 inline-flex min-h-11 flex-col justify-center leading-7 text-[var(--atelier-ivory)]/82 transition-colors hover:text-[var(--atelier-coral)]"
+                  >
+                    {addressLines.map((line) => (
+                      <span key={line}>{line}</span>
+                    ))}
+                  </a>
+                ) : (
+                  <p className="mt-5 leading-7 text-[var(--atelier-ivory)]/82">
+                    {addressLines.map((line) => (
+                      <span key={line} className="block">
+                        {line}
+                      </span>
+                    ))}
+                  </p>
+                )
+              ) : null}
+            </section>
+
+            <section>
+              <h3 className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--atelier-ivory)]/58">
+                Hours
+              </h3>
+              <div className="mt-5 space-y-4 leading-7 text-[var(--atelier-ivory)]/82">
+                {hours.map((group) => (
+                  <p key={group.days + "-" + group.hours}>
+                    <span className="block">{group.days}</span>
+                    <span className="block">{group.hours}</span>
+                  </p>
+                ))}
+              </div>
+            </section>
+
+            <section>
+              <h3 className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--atelier-ivory)]/58">
+                Contact
+              </h3>
+              <div className="mt-5 flex flex-col">
+                {email ? (
+                  <a
+                    href={"mailto:" + email}
+                    className="inline-flex min-h-11 items-center break-all text-[var(--atelier-ivory)]/82 transition-colors hover:text-[var(--atelier-coral)]"
+                  >
+                    {email}
+                  </a>
+                ) : null}
+
+                {phoneNumber && phoneHref ? (
+                  <a
+                    href={phoneHref}
+                    className="inline-flex min-h-11 items-center text-[var(--atelier-ivory)]/82 transition-colors hover:text-[var(--atelier-coral)]"
+                  >
+                    {phoneNumber}
+                  </a>
+                ) : null}
+
+                {siteSettings.socialLinks.map((link) => (
+                  <a
+                    key={link.platform}
+                    href={link.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex min-h-11 items-center capitalize text-[var(--atelier-ivory)]/82 transition-colors hover:text-[var(--atelier-coral)]"
+                  >
+                    {link.platform}
+                  </a>
+                ))}
+              </div>
+            </section>
+          </div>
+
+          <div className="flex flex-col gap-5 border-t border-white/16 py-8 text-sm text-[var(--atelier-ivory)]/62 sm:flex-row sm:items-center sm:justify-between">
+            <p>
+              {formatCopyright(
+                siteSettings.footerCopyrightText,
+                siteSettings.businessName,
+              )}
+            </p>
+
+            {footerLinks.length > 0 ? (
+              <nav aria-label="Footer navigation">
+                <ul className="flex flex-wrap gap-x-5 gap-y-2">
+                  {footerLinks.map((link) => (
+                    <li key={link.key}>
+                      <a
+                        href={link.url}
+                        target={
+                          link.url.startsWith("https://") ? "_blank" : undefined
+                        }
+                        rel={
+                          link.url.startsWith("https://")
+                            ? "noopener noreferrer"
+                            : undefined
+                        }
+                        className="inline-flex min-h-11 items-center transition-colors hover:text-[var(--atelier-coral)]"
+                      >
+                        {link.label}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </nav>
+            ) : null}
+          </div>
+        </Container>
+      </footer>
+    );
+  }
 
   return (
     <footer className="relative overflow-hidden bg-[#1B1B1B] text-white">
