@@ -139,6 +139,12 @@ function MobileMenuLayer({
       if (window.location.href === openedLocation) {
         previouslyFocused?.focus({ preventScroll: true });
         window.scrollTo(scrollPosition.x, scrollPosition.y);
+      } else if (window.location.hash) {
+        const targetId = window.location.hash.slice(1);
+
+        window.requestAnimationFrame(() => {
+          document.getElementById(targetId)?.scrollIntoView();
+        });
       }
     };
   }, [onClose]);
