@@ -60,7 +60,7 @@ export default function Navbar({
   const headerClass = isAtelier
     ? scrolled
       ? "border-b border-[var(--atelier-line)] bg-[var(--atelier-header-light)] text-[var(--atelier-ink-deep)] shadow-[var(--atelier-shadow-soft)] supports-[backdrop-filter]:backdrop-blur-xl"
-      : "border-b border-white/10 bg-[var(--atelier-header-dark)] text-[var(--atelier-ivory)] supports-[backdrop-filter]:backdrop-blur-xl"
+      : "border-b border-[var(--atelier-line)]/70 bg-[var(--atelier-ivory)]/92 text-[var(--atelier-ink-deep)] supports-[backdrop-filter]:backdrop-blur-xl"
     : scrolled
       ? "border-b border-black/5 bg-white/75 shadow-[0_12px_40px_rgba(0,0,0,0.06)] supports-[backdrop-filter]:backdrop-blur-2xl"
       : "bg-transparent";
@@ -158,7 +158,7 @@ export default function Navbar({
             (isAtelier
               ? scrolled
                 ? "rounded-full border-[var(--atelier-line)] bg-[var(--atelier-ivory)] text-[var(--atelier-ink-deep)]"
-                : "rounded-full border-white/25 bg-black/15 text-white"
+                : "rounded-full border-[var(--atelier-line)] bg-transparent text-[var(--atelier-ink-deep)]"
               : scrolled
                 ? "rounded-2xl border-black/10 bg-white/80 text-dark"
                 : "rounded-2xl border-white/25 bg-black/10 text-white backdrop-blur-sm")

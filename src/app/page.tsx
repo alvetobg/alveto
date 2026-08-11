@@ -33,6 +33,10 @@ export default async function Home() {
     getPublicSiteSettings(),
   ]);
   const featuredSection = homepageResult.content?.featuredSection;
+  const featuredProducts = featuredSection?.products ?? [];
+  const galleryCollections = galleryResult.collections.filter(
+    (collection) => collection.items.length > 0,
+  );
   const reservationSettings = reservationResult.settings;
   const siteSettings = siteSettingsResult.settings;
 
@@ -55,12 +59,11 @@ export default async function Home() {
           siteSettings={siteSettings}
         />
         <Experience />
-        {featuredSection ? (
+        {featuredSection && featuredProducts.length > 0 ? (
           <Signature
             eyebrow={featuredSection.eyebrow}
             title={featuredSection.title}
-            products={featuredSection.products}
-            state={homepageResult.state}
+            products={featuredProducts}
           />
         ) : null}
         <About
@@ -68,8 +71,7 @@ export default async function Home() {
           siteSettings={siteSettings}
         />
         <Gallery
-          collections={galleryResult.collections}
-          state={galleryResult.state}
+          collections={galleryCollections}
         />
         <Reservation
           settings={reservationSettings}

@@ -26,18 +26,18 @@
 .homepage-v2 {
   --font-display: var(--font-manrope);
   --atelier-ivory: #f7f4ef;
-  --atelier-ivory-deep: #eee7dd;
-  --atelier-ivory-muted: #e2d8cc;
+  --atelier-paper: #fbf8f3;
+  --atelier-ivory-deep: #ede5da;
+  --atelier-ivory-muted: #ded2c4;
   --atelier-ink: #222222;
-  --atelier-ink-deep: #151515;
-  --atelier-ink-soft: #504943;
-  --atelier-line: #d6cbc0;
+  --atelier-ink-deep: #171615;
+  --atelier-ink-soft: #514a45;
+  --atelier-line: #d1c5b8;
   --atelier-coral: #c76d6d;
   --atelier-coral-hover: #cb7777;
   --atelier-header-light: rgba(247, 244, 239, 0.96);
-  --atelier-header-dark: rgba(21, 21, 21, 0.62);
-  --atelier-shadow-soft: 0 18px 50px rgba(34, 34, 34, 0.1);
-  --atelier-shadow-strong: 0 24px 70px rgba(34, 34, 34, 0.14);
+  --atelier-shadow-soft: 0 12px 34px rgba(34, 34, 34, 0.08);
+  background: var(--atelier-ivory);
 }
 
 @theme inline {
