@@ -2,6 +2,12 @@
 
 import { useMemo, useState } from "react";
 
+import {
+  ArrowLeftIcon,
+  PlateIcon,
+  SavoryIcon,
+  SweetIcon,
+} from "@/components/menu/MenuIcons";
 import type { PublicBuilder } from "@/features/builders/types";
 import BuilderOption from "./BuilderOption";
 import BuilderSection from "./BuilderSection";
@@ -103,53 +109,84 @@ export default function ConfiguredBuilder({
         )
         .map((option) => option.name),
     }));
+  const requiredGroups = builder.groups.filter(
+    (group) => group.isRequired || group.minimumSelections > 0,
+  );
+  const requiredComplete = requiredGroups.filter(
+    (group) =>
+      (selectedByGroup[group.id] ?? []).length >= group.minimumSelections,
+  ).length;
 
   return (
-    <section className="space-y-8">
-      <div className="flex flex-wrap items-center justify-between gap-4">
+    <section className="space-y-7 md:space-y-9" aria-labelledby="active-builder-title">
+      <div className="flex flex-col gap-5 border-b border-dark/12 pb-7 sm:flex-row sm:items-end sm:justify-between">
+        <div className="flex min-w-0 items-start gap-4">
+          <span className="mt-0.5 flex h-12 w-12 shrink-0 items-center justify-center rounded-[14px] border border-primary/35 bg-primary/8 text-primary">
+            <BuilderIcon slug={builder.slug} />
+          </span>
+          {showHeader ? (
+            <div className="min-w-0">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-primary">
+                Create your own
+              </p>
+              <h3
+                id="active-builder-title"
+                className="mt-1 break-words text-[28px] font-semibold leading-tight tracking-[-0.035em] text-dark md:text-4xl"
+              >
+                {builder.title}
+              </h3>
+              {builder.description ? (
+                <p className="mt-2 max-w-2xl text-sm leading-6 text-text">
+                  {builder.description}
+                </p>
+              ) : null}
+            </div>
+          ) : (
+            <h3 id="active-builder-title" className="sr-only">
+              {builder.title}
+            </h3>
+          )}
+        </div>
+
         <button
           type="button"
           onClick={onBack}
-          className="rounded-2xl border border-neutral-300 bg-white px-6 py-3 font-semibold transition hover:bg-neutral-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+          className="inline-flex min-h-11 w-fit items-center gap-2 rounded-[13px] border border-dark/14 bg-white px-4 text-sm font-semibold text-dark transition-colors duration-150 hover:border-primary hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
         >
-          ← Back
+          <ArrowLeftIcon />
+          Change builder
         </button>
-
-        {showHeader ? (
-          <div>
-            <h3 className="text-3xl font-bold">
-              {builder.slug === "sweet" ? "🍓 " : ""}
-              {builder.title}
-            </h3>
-            {builder.description ? (
-              <p className="mt-1 text-neutral-500">{builder.description}</p>
-            ) : null}
-          </div>
-        ) : (
-          <h3 className="sr-only">{builder.title}</h3>
-        )}
       </div>
 
-      <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_380px]">
-        <div className="min-w-0 space-y-6">
-          {builder.groups.map((group) => {
+      <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_340px] lg:gap-10 xl:grid-cols-[minmax(0,1fr)_370px]">
+        <div className="min-w-0 space-y-4">
+          {builder.groups.map((group, groupIndex) => {
             const selectedIds = selectedByGroup[group.id] ?? [];
             const selectedCount = selectedIds.length;
-            const isSingleRequired =
-              group.isRequired && group.maximumSelections === 1;
+            const required = group.isRequired || group.minimumSelections > 0;
+            const subtitle = required
+              ? group.maximumSelections === 1
+                ? "Choose one - required"
+                : `Choose ${group.minimumSelections} to ${group.maximumSelections} - required`
+              : `Choose up to ${group.maximumSelections}`;
+
             return (
               <BuilderSection
                 key={group.id}
+                id={`builder-group-${group.id}`}
+                step={groupIndex + 1}
                 title={group.name}
-                subtitle={
-                  isSingleRequired
-                    ? "Choose one"
-                    : `Choose up to ${group.maximumSelections}`
-                }
+                subtitle={subtitle}
                 open={openGroupId === group.id}
-                onToggle={() => setOpenGroupId(group.id)}
+                onToggle={() =>
+                  setOpenGroupId((current) =>
+                    current === group.id ? "" : group.id,
+                  )
+                }
                 selectedCount={selectedCount}
-                limit={isSingleRequired ? undefined : group.maximumSelections}
+                limit={group.maximumSelections}
+                required={required}
+                complete={required && selectedCount >= group.minimumSelections}
               >
                 {group.options.map((option) => (
                   <BuilderOption
@@ -172,7 +209,9 @@ export default function ConfiguredBuilder({
 
         <div
           className={
-            stickySummary ? "lg:sticky lg:top-28 lg:self-start" : undefined
+            stickySummary
+              ? "lg:sticky lg:top-[164px] lg:self-start"
+              : undefined
           }
         >
           <SummaryCard
@@ -180,10 +219,18 @@ export default function ConfiguredBuilder({
             base={baseSelections.join(", ")}
             sections={summary}
             total={totalMinor / 100}
+            requiredComplete={requiredComplete}
+            requiredTotal={requiredGroups.length}
             onReset={reset}
           />
         </div>
       </div>
     </section>
   );
+}
+
+function BuilderIcon({ slug }: Readonly<{ slug: string }>) {
+  if (slug === "sweet") return <SweetIcon />;
+  if (slug === "savory") return <SavoryIcon />;
+  return <PlateIcon />;
 }

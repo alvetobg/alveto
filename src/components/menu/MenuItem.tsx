@@ -1,103 +1,192 @@
 import Image from "next/image";
+
 import { getOptionalImageSource } from "@/lib/images";
 
-type MenuItemProps = {
+type MenuItemProps = Readonly<{
+  id: string;
   name: string;
   description: string;
   price: number;
   image?: string;
   imageAlt?: string;
-  badge?: string;
+  variant: "text" | "image" | "feature";
   onClick?: () => void;
-};
+}>;
 
 export default function MenuItem({
+  id,
   name,
   description,
   price,
   image,
   imageAlt,
-  badge,
+  variant,
   onClick,
 }: MenuItemProps) {
   const imageSource = getOptionalImageSource(image);
+  const resolvedVariant = imageSource ? variant : "text";
+  const titleId = `menu-product-${id}-title`;
+  const descriptionId = `menu-product-${id}-description`;
+  const priceId = `menu-product-${id}-price`;
 
-  return (
-    <article
-      role="button"
-      tabIndex={0}
-      onClick={() => onClick?.()}
-      onKeyDown={(e) => {
-        if (e.key === "Enter" || e.key === " ") {
-          e.preventDefault();
-          onClick?.();
-        }
-      }}
-      className="group cursor-pointer overflow-hidden rounded-[32px] border border-black/5 bg-white shadow-[0_10px_35px_rgba(0,0,0,0.05)] transition-all duration-500 hover:-translate-y-1 hover:border-primary/10 hover:shadow-[0_25px_60px_rgba(0,0,0,0.12)] focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 motion-reduce:transform-none motion-reduce:transition-none"
-    >
-      <div className="flex flex-col overflow-hidden md:flex-row">
-        {imageSource && (
-          <div className="relative h-56 w-full overflow-hidden md:h-auto md:w-72 md:flex-shrink-0">
-            <Image
-              src={imageSource}
-              alt={imageAlt ?? name}
-              fill
-              quality={85}
-              sizes="(max-width: 767px) calc(100vw - 48px), 288px"
-              className="object-cover transition-transform duration-700 ease-out group-hover:scale-105 motion-reduce:transform-none motion-reduce:transition-none"
-            />
+  if (resolvedVariant === "feature" && imageSource) {
+    return (
+      <article className="group relative overflow-hidden rounded-[22px] border border-dark/10 bg-white md:col-span-2 md:grid md:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] md:rounded-[24px]">
+        <div className="relative aspect-[3/2] overflow-hidden bg-[#ece5db] md:aspect-auto md:min-h-[330px]">
+          <Image
+            src={imageSource}
+            alt={imageAlt ?? name}
+            fill
+            quality={85}
+            sizes="(max-width: 767px) calc(100vw - 48px), 520px"
+            className="object-cover"
+          />
+        </div>
 
-            <div className="absolute inset-0 bg-gradient-to-t from-black/25 via-transparent to-transparent" />
-
-            {badge && (
-              <span className="absolute left-5 top-5 rounded-full bg-white/90 px-4 py-2 text-[11px] font-bold uppercase tracking-[2px] text-primary shadow-lg backdrop-blur">
-                {badge}
-              </span>
-            )}
-          </div>
-        )}
-
-        <div className="flex flex-1 flex-col justify-between p-6 md:p-8">
+        <div className="flex min-w-0 flex-col justify-between p-5 min-[390px]:p-6 md:p-8 lg:p-10">
           <div>
-            <h3 className="text-2xl font-bold tracking-tight text-dark transition-colors duration-300 group-hover:text-primary md:text-3xl">
+            <h3
+              id={titleId}
+              className="text-2xl font-semibold leading-tight tracking-[-0.035em] text-dark transition-colors duration-200 group-hover:text-primary md:text-3xl"
+            >
               {name}
             </h3>
-
-            <p className="mt-4 text-sm leading-7 text-text md:text-base md:leading-8">
+            <p
+              id={descriptionId}
+              className="mt-3 text-sm leading-6 text-text md:mt-4 md:max-w-xl md:text-base md:leading-7"
+            >
               {description}
             </p>
           </div>
-
-          <div className="mt-8 flex items-end justify-between gap-6">
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-[4px] text-neutral-400">
-                Price
-              </p>
-
-              <p className="mt-2 text-2xl font-extrabold tracking-tight text-primary md:text-3xl">
-                {price.toLocaleString("sr-RS")} RSD
-              </p>
-            </div>
-
-            <div className="flex items-center gap-2 text-sm font-semibold text-primary transition-all duration-300 group-hover:translate-x-1 motion-reduce:transform-none motion-reduce:transition-none">
-              <span>View Details</span>
-
-              <svg
-                className="h-5 w-5 transition-transform duration-300 group-hover:translate-x-1 motion-reduce:transform-none motion-reduce:transition-none"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M5 12h14" />
-                <path d="m13 5 7 7-7 7" />
-              </svg>
-            </div>
-          </div>
+          <p
+            id={priceId}
+            className="mt-6 whitespace-nowrap text-xl font-bold tracking-[-0.025em] text-primary md:text-2xl"
+          >
+            {price.toLocaleString("sr-RS")} RSD
+          </p>
         </div>
+
+        <ProductTrigger
+          name={name}
+          titleId={titleId}
+          descriptionId={descriptionId}
+          priceId={priceId}
+          onClick={onClick}
+          roundedClass="rounded-[22px] md:rounded-[24px]"
+        />
+      </article>
+    );
+  }
+
+  if (resolvedVariant === "image" && imageSource) {
+    return (
+      <article className="group relative grid min-w-0 grid-cols-[96px_minmax(0,1fr)] gap-4 border-b border-dark/10 py-5 min-[390px]:grid-cols-[112px_minmax(0,1fr)] md:grid-cols-[128px_minmax(0,1fr)] md:gap-5 md:py-6">
+        <div className="relative aspect-[3/2] self-start overflow-hidden rounded-[14px] bg-[#ece5db] md:rounded-[16px]">
+          <Image
+            src={imageSource}
+            alt={imageAlt ?? name}
+            fill
+            quality={85}
+            sizes="(max-width: 389px) 96px, (max-width: 767px) 112px, 128px"
+            className="object-cover"
+          />
+        </div>
+
+        <div className="min-w-0">
+          <div className="flex items-start justify-between gap-3">
+            <h3
+              id={titleId}
+              className="min-w-0 text-[17px] font-semibold leading-[1.25] tracking-[-0.025em] text-dark transition-colors duration-200 group-hover:text-primary md:text-lg"
+            >
+              {name}
+            </h3>
+            <p
+              id={priceId}
+              className="shrink-0 whitespace-nowrap text-[15px] font-bold tracking-[-0.02em] text-primary md:text-base"
+            >
+              {price.toLocaleString("sr-RS")} RSD
+            </p>
+          </div>
+          <p
+            id={descriptionId}
+            className="mt-2 text-[13px] leading-5 text-text md:text-sm md:leading-6"
+          >
+            {description}
+          </p>
+        </div>
+
+        <ProductTrigger
+          name={name}
+          titleId={titleId}
+          descriptionId={descriptionId}
+          priceId={priceId}
+          onClick={onClick}
+          roundedClass="rounded-[14px]"
+        />
+      </article>
+    );
+  }
+
+  return (
+    <article className="group relative min-w-0 border-b border-dark/10 py-5 md:py-6">
+      <div className="flex items-start justify-between gap-4">
+        <h3
+          id={titleId}
+          className="min-w-0 text-[17px] font-semibold leading-[1.25] tracking-[-0.025em] text-dark transition-colors duration-200 group-hover:text-primary md:text-lg"
+        >
+          {name}
+        </h3>
+        <p
+          id={priceId}
+          className="shrink-0 whitespace-nowrap text-[15px] font-bold tracking-[-0.02em] text-primary md:text-base"
+        >
+          {price.toLocaleString("sr-RS")} RSD
+        </p>
       </div>
+      <p
+        id={descriptionId}
+        className="mt-2 max-w-[58ch] text-[13px] leading-5 text-text md:text-sm md:leading-6"
+      >
+        {description}
+      </p>
+
+      <ProductTrigger
+        name={name}
+        titleId={titleId}
+        descriptionId={descriptionId}
+        priceId={priceId}
+        onClick={onClick}
+        roundedClass="rounded-[12px]"
+      />
     </article>
+  );
+}
+
+function ProductTrigger({
+  name,
+  titleId,
+  descriptionId,
+  priceId,
+  onClick,
+  roundedClass,
+}: Readonly<{
+  name: string;
+  titleId: string;
+  descriptionId: string;
+  priceId: string;
+  onClick?: () => void;
+  roundedClass: string;
+}>) {
+  return (
+    <button
+      type="button"
+      aria-haspopup="dialog"
+      aria-labelledby={titleId}
+      aria-describedby={`${descriptionId} ${priceId}`}
+      onClick={onClick}
+      className={`absolute inset-0 z-10 ${roundedClass} focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary`}
+    >
+      <span className="sr-only">View details for {name}</span>
+    </button>
   );
 }

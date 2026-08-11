@@ -6,6 +6,7 @@ import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 
+import { CloseIcon } from "@/components/menu/MenuIcons";
 import Button from "@/components/ui/Button";
 import type { PublicReservationSettings } from "@/features/reservations/types";
 import { formatAddress } from "@/features/site-settings/presentation";
@@ -138,12 +139,19 @@ function MobileMenuLayer({
 
       if (window.location.href === openedLocation) {
         previouslyFocused?.focus({ preventScroll: true });
-        window.scrollTo(scrollPosition.x, scrollPosition.y);
+        window.scrollTo({
+          left: scrollPosition.x,
+          top: scrollPosition.y,
+          behavior: "instant",
+        });
       } else if (window.location.hash) {
         const targetId = window.location.hash.slice(1);
 
         window.requestAnimationFrame(() => {
-          document.getElementById(targetId)?.scrollIntoView();
+          document.getElementById(targetId)?.scrollIntoView({
+            behavior: "instant",
+            block: "start",
+          });
         });
       }
     };
@@ -155,7 +163,7 @@ function MobileMenuLayer({
       role="dialog"
       aria-modal="true"
       aria-label="Mobile navigation"
-      className="fixed inset-0 isolate z-[60] md:hidden"
+      className="fixed inset-0 z-[80] flex items-center justify-end p-2 md:hidden"
     >
       <motion.button
         type="button"
@@ -164,26 +172,31 @@ function MobileMenuLayer({
         initial={reduceMotion ? false : { opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        transition={{ duration: reduceMotion ? 0 : 0.2 }}
-        className="absolute inset-0 bg-black/55 backdrop-blur-sm"
+        transition={{
+          duration: reduceMotion ? 0 : 0.15,
+          ease: [0.22, 1, 0.36, 1],
+        }}
+        className="absolute inset-0 bg-dark/55"
       />
 
       <motion.div
         ref={panelRef}
-        initial={reduceMotion ? false : { x: "100%" }}
-        animate={{ x: 0 }}
-        exit={reduceMotion ? { x: 0 } : { x: "100%" }}
+        initial={reduceMotion ? false : { opacity: 0.98, x: 16 }}
+        animate={{ opacity: 1, x: 0 }}
+        exit={
+          reduceMotion ? { opacity: 1, x: 0 } : { opacity: 0.98, x: 16 }
+        }
         transition={{
-          duration: reduceMotion ? 0 : 0.35,
+          duration: reduceMotion ? 0 : 0.28,
           ease: [0.22, 1, 0.36, 1],
         }}
-        className="absolute inset-y-0 right-0 flex w-[min(88vw,380px)] flex-col overflow-y-auto overscroll-contain bg-cream px-7 shadow-[-20px_0_60px_rgba(0,0,0,0.2)]"
+        className="relative flex max-h-[min(720px,calc(100dvh-1rem))] w-[90vw] max-w-[380px] flex-col overflow-y-auto overscroll-contain rounded-[22px] bg-cream px-5 shadow-[-16px_16px_48px_rgba(0,0,0,0.18)] min-[375px]:px-6"
         style={{
-          paddingTop: "max(1.5rem, env(safe-area-inset-top))",
-          paddingBottom: "max(2rem, env(safe-area-inset-bottom))",
+          paddingTop: "max(1.25rem, env(safe-area-inset-top))",
+          paddingBottom: "max(1.25rem, env(safe-area-inset-bottom))",
         }}
       >
-        <div className="flex items-center justify-between border-b border-black/10 pb-6">
+        <div className="flex items-center justify-between border-b border-dark/10 pb-5">
           <Link
             href="/"
             aria-label={`${siteSettings.businessName} Home`}
@@ -195,7 +208,7 @@ function MobileMenuLayer({
               width={120}
               height={29}
               sizes="120px"
-              className="h-auto w-[120px]"
+              className="h-auto w-32"
             />
           </Link>
 
@@ -204,19 +217,28 @@ function MobileMenuLayer({
             type="button"
             aria-label="Close navigation menu"
             onClick={onClose}
-            className="flex h-12 w-12 items-center justify-center rounded-2xl border border-black/10 bg-white text-2xl text-dark transition-colors hover:border-primary/30 hover:text-primary"
+            className="flex h-11 w-11 items-center justify-center rounded-[13px] border border-dark/14 text-dark transition-[color,border-color,background-color,transform] duration-200 hover:border-primary hover:text-primary active:translate-y-px motion-reduce:transform-none"
           >
-            <span aria-hidden="true">&times;</span>
+            <CloseIcon />
           </button>
         </div>
 
-        <nav aria-label="Mobile navigation" className="mt-10">
-          <ul className="space-y-2">
+        <nav aria-label="Mobile navigation" className="mt-5">
+          <ul className="space-y-1">
+            <li>
+              <Link
+                href="/"
+                onClick={onClose}
+                className="flex min-h-12 items-center rounded-[12px] px-3 text-xl font-semibold tracking-[-0.025em] text-dark transition-colors duration-200 hover:bg-white/80 hover:text-primary"
+              >
+                Home
+              </Link>
+            </li>
             <li>
               <Link
                 href="/#experience"
                 onClick={onClose}
-                className="block rounded-2xl px-4 py-4 text-2xl font-bold tracking-tight text-dark transition-colors hover:bg-white hover:text-primary"
+                className="flex min-h-12 items-center rounded-[12px] px-3 text-xl font-semibold tracking-[-0.025em] text-dark transition-colors duration-200 hover:bg-white/80 hover:text-primary"
               >
                 Experience
               </Link>
@@ -225,7 +247,8 @@ function MobileMenuLayer({
               <Link
                 href="/menu"
                 onClick={onClose}
-                className="block rounded-2xl px-4 py-4 text-2xl font-bold tracking-tight text-dark transition-colors hover:bg-white hover:text-primary"
+                aria-current="page"
+                className="flex min-h-12 items-center rounded-[12px] bg-white/80 px-3 text-xl font-semibold tracking-[-0.025em] text-primary transition-colors duration-200"
               >
                 Menu
               </Link>
@@ -233,18 +256,18 @@ function MobileMenuLayer({
           </ul>
         </nav>
 
-        <div className="mt-auto border-t border-black/10 pt-6">
+        <div className="mt-6 border-t border-dark/10 pt-5">
           {reservationSettings?.reservationsEnabled &&
           reservationSettings.reservationUrl ? (
             <Button
               href={reservationSettings.reservationUrl}
-              className="w-full py-4"
+              className="w-full"
             >
               {reservationSettings.primaryCtaLabel}
             </Button>
           ) : null}
           {formatAddress(siteSettings) ? (
-            <p className="mt-5 text-center text-sm leading-6 text-text">
+            <p className="mt-5 text-sm leading-6 text-text">
               {formatAddress(siteSettings)}
             </p>
           ) : null}

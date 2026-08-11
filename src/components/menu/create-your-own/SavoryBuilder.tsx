@@ -15,8 +15,8 @@ export default function SavoryBuilder({
       builder={builder}
       onBack={onBack}
       autoAdvance={false}
-      showHeader={false}
-      stickySummary={false}
+      showHeader
+      stickySummary
     />
   );
 }

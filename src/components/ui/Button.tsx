@@ -18,14 +18,14 @@ export default function Button({
   disabled = false,
 }: ButtonProps) {
   const base =
-    "inline-flex items-center justify-center rounded-2xl px-7 py-3 text-sm font-semibold tracking-wide transition-all duration-300 ease-out";
+    "inline-flex min-h-12 items-center justify-center rounded-[14px] px-6 py-3 text-sm font-semibold tracking-[-0.01em] transition-[color,background-color,border-color,transform] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] active:translate-y-px motion-reduce:transform-none";
 
   const variants = {
     primary:
-      "bg-primary text-white shadow-lg hover:-translate-y-0.5 hover:bg-primary-hover hover:shadow-xl active:translate-y-0",
+      "border border-primary bg-primary text-dark hover:border-primary-hover hover:bg-primary-hover",
 
     secondary:
-      "border border-white/70 bg-transparent text-white hover:bg-white hover:text-dark hover:border-white",
+      "border border-white/70 bg-transparent text-white hover:border-white hover:bg-white hover:text-dark",
 
     ghost:
       "bg-transparent text-dark hover:bg-black/5",
