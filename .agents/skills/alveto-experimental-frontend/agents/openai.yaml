@@ -1,0 +1,6 @@
+interface:
+  display_name: "Alveto Experimental Frontend"
+  short_description: "Evaluate premium brand-led frontend techniques"
+  default_prompt: "Use $alveto-experimental-frontend to evaluate one premium Alveto-specific frontend technique without redesigning the site."
+policy:
+  allow_implicit_invocation: true

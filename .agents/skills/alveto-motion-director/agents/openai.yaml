@@ -1,0 +1,6 @@
+interface:
+  display_name: "Alveto Motion Director"
+  short_description: "Define restrained, accessible Alveto motion systems"
+  default_prompt: "Use $alveto-motion-director to create a restrained motion map for this Alveto design before implementation."
+policy:
+  allow_implicit_invocation: true

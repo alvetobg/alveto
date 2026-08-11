@@ -1,0 +1,6 @@
+interface:
+  display_name: "Alveto Image Art Director"
+  short_description: "Direct real Alveto photography and responsive crops"
+  default_prompt: "Use $alveto-image-art-director to audit real Alveto imagery and define section-specific crops and photography needs."
+policy:
+  allow_implicit_invocation: true

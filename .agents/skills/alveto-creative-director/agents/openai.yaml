@@ -1,0 +1,6 @@
+interface:
+  display_name: "Alveto Creative Director"
+  short_description: "Protect Alveto identity and premium visual quality"
+  default_prompt: "Use $alveto-creative-director to review this proposal against production Alveto and issue a brand-continuity verdict."
+policy:
+  allow_implicit_invocation: true

@@ -1,0 +1,6 @@
+interface:
+  display_name: "Alveto Performance Guardian"
+  short_description: "Enforce Alveto frontend performance budgets"
+  default_prompt: "Use $alveto-performance-guardian to measure this Alveto change against route budgets and issue a performance verdict."
+policy:
+  allow_implicit_invocation: true
