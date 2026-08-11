@@ -43,6 +43,7 @@ function MobileMenuLayer({
     const previousBodyLeft = body.style.left;
     const previousBodyWidth = body.style.width;
     const scrollPosition = { x: window.scrollX, y: window.scrollY };
+    const openedLocation = window.location.href;
     const scrollbarWidth = window.innerWidth - root.clientWidth;
     const backgroundElements = Array.from(
       document.querySelectorAll<HTMLElement>(
@@ -135,8 +136,10 @@ function MobileMenuLayer({
         }
       });
 
-      previouslyFocused?.focus({ preventScroll: true });
-      window.scrollTo(scrollPosition.x, scrollPosition.y);
+      if (window.location.href === openedLocation) {
+        previouslyFocused?.focus({ preventScroll: true });
+        window.scrollTo(scrollPosition.x, scrollPosition.y);
+      }
     };
   }, [onClose]);
 
