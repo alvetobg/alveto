@@ -1,44 +1,33 @@
 import "server-only";
 
 import type {
+  HomepageFeaturedProduct,
   HomepageFeaturedSection,
+  HomepageImage,
   PublishedHomepageContent,
 } from "@/features/homepage/types";
-import { getProductImageFallback } from "@/features/menu/presentation";
-import type { MenuProduct } from "@/features/menu/types";
+import { createContentImageUrl } from "@/lib/content-images";
 import type { Database } from "@/lib/supabase/database.types";
-import type { SupabaseServerClient } from "@/lib/supabase/server";
+import {
+  type PublicStorageBucket,
+  type SupabaseServerClient,
+} from "@/lib/supabase/server";
 
 type GeneratedHomepageRow =
-  Database["public"]["Functions"]["get_alveto_published_homepage"]["Returns"][number];
+  Database["public"]["Functions"]["get_alveto_published_homepage_v2"]["Returns"][number];
 
-type PublicHomepageRow = Omit<
-  GeneratedHomepageRow,
-  | "featured_section_eyebrow"
-  | "featured_section_title"
-  | "featured_section_display_order"
-  | "featured_product_id"
-  | "featured_product_slug"
-  | "featured_product_name"
-  | "featured_product_description"
-  | "featured_product_base_price_minor"
-  | "featured_product_display_order"
-  | "image_storage_path"
-  | "image_alt_text"
-> &
-  Readonly<{
-    featured_section_eyebrow: string | null;
-    featured_section_title: string | null;
-    featured_section_display_order: number | null;
-    featured_product_id: string | null;
-    featured_product_slug: string | null;
-    featured_product_name: string | null;
-    featured_product_description: string | null;
-    featured_product_base_price_minor: number | null;
-    featured_product_display_order: number | null;
-    image_storage_path: string | null;
-    image_alt_text: string | null;
-  }>;
+type HeroColumn =
+  | "hero_title"
+  | "hero_subtitle"
+  | "hero_button_label"
+  | "hero_button_url"
+  | "hero_image_path";
+
+type PublicHomepageRow = Pick<GeneratedHomepageRow, HeroColumn> & {
+  [Column in Exclude<keyof GeneratedHomepageRow, HeroColumn>]:
+    | GeneratedHomepageRow[Column]
+    | null;
+};
 
 type FeaturedProductRow = PublicHomepageRow &
   Readonly<{
@@ -55,10 +44,44 @@ type FeaturedProductRow = PublicHomepageRow &
 
 type OrderedProduct = Readonly<{
   order: number;
-  product: MenuProduct;
+  product: HomepageFeaturedProduct;
 }>;
 
-const signedImageLifetimeSeconds = 86_400;
+type ImageFields = Readonly<{
+  bucketId: string | null;
+  path: string | null;
+  altText: string | null;
+  width: number | null;
+  height: number | null;
+}>;
+
+type ValidImageFields = Readonly<{
+  bucketId: PublicStorageBucket;
+  path: string;
+  altText: string;
+  width: number;
+  height: number;
+}>;
+
+type HomepageMediaPrefix =
+  | "experience_morning"
+  | "experience_afternoon"
+  | "experience_evening"
+  | "about_primary"
+  | "about_secondary";
+
+const homepageMediaPrefixes: readonly HomepageMediaPrefix[] = [
+  "experience_morning",
+  "experience_afternoon",
+  "experience_evening",
+  "about_primary",
+  "about_secondary",
+];
+const allowedImageBuckets = new Set<PublicStorageBucket>([
+  "product-images",
+  "site-media",
+]);
+const maximumFeaturedProducts = 6;
 
 export class PublishedHomepageRepositoryError extends Error {
   constructor() {
@@ -72,18 +95,31 @@ export interface PublishedHomepageRepository {
 }
 
 function isNonEmptyString(value: unknown): value is string {
-  return typeof value === "string" && value.length > 0;
+  return typeof value === "string" && value.trim().length > 0;
 }
 
 function isOrder(value: unknown): value is number {
   return typeof value === "number" && Number.isInteger(value) && value >= 0;
 }
 
+function isPositiveInteger(value: unknown): value is number {
+  return typeof value === "number" && Number.isInteger(value) && value > 0;
+}
+
+function isPublicStorageBucket(value: unknown): value is PublicStorageBucket {
+  return (
+    typeof value === "string" &&
+    allowedImageBuckets.has(value as PublicStorageBucket)
+  );
+}
+
 function isSafeInternalLink(value: string) {
-  return /^#[A-Za-z][A-Za-z0-9_-]*$/.test(value) ||
+  return (
+    /^#[A-Za-z][A-Za-z0-9_-]*$/.test(value) ||
     (value.startsWith("/") &&
       !value.startsWith("//") &&
-      !value.includes(".."));
+      !value.includes(".."))
+  );
 }
 
 function isSafeImagePath(value: string) {
@@ -107,6 +143,59 @@ function isHeroRow(row: PublicHomepageRow) {
   );
 }
 
+function getImageFields(
+  row: PublicHomepageRow,
+  prefix: HomepageMediaPrefix,
+): ImageFields {
+  return {
+    bucketId: row[`${prefix}_image_bucket_id`],
+    path: row[`${prefix}_image_storage_path`],
+    altText: row[`${prefix}_image_alt_text`],
+    width: row[`${prefix}_image_width`],
+    height: row[`${prefix}_image_height`],
+  };
+}
+
+function getFeaturedImageFields(row: PublicHomepageRow): ImageFields {
+  return {
+    bucketId: row.image_bucket_id,
+    path: row.image_storage_path,
+    altText: row.image_alt_text,
+    width: row.image_width,
+    height: row.image_height,
+  };
+}
+
+function isEmptyImage(fields: ImageFields) {
+  return Object.values(fields).every((value) => value === null);
+}
+
+function isValidImage(fields: ImageFields): fields is ValidImageFields {
+  return (
+    isPublicStorageBucket(fields.bucketId) &&
+    isNonEmptyString(fields.path) &&
+    isNonEmptyString(fields.altText) &&
+    isPositiveInteger(fields.width) &&
+    isPositiveInteger(fields.height)
+  );
+}
+
+function hasValidOptionalImage(fields: ImageFields) {
+  return isEmptyImage(fields) || isValidImage(fields);
+}
+
+function isEmptyProductRow(row: PublicHomepageRow) {
+  return (
+    row.featured_product_id === null &&
+    row.featured_product_slug === null &&
+    row.featured_product_name === null &&
+    row.featured_product_description === null &&
+    row.featured_product_base_price_minor === null &&
+    row.featured_product_display_order === null &&
+    isEmptyImage(getFeaturedImageFields(row))
+  );
+}
+
 function isEmptySectionRow(row: PublicHomepageRow) {
   return (
     row.featured_section_eyebrow === null &&
@@ -124,25 +213,7 @@ function isSectionRow(row: PublicHomepageRow) {
   );
 }
 
-function isEmptyProductRow(row: PublicHomepageRow) {
-  return (
-    row.featured_product_id === null &&
-    row.featured_product_slug === null &&
-    row.featured_product_name === null &&
-    row.featured_product_description === null &&
-    row.featured_product_base_price_minor === null &&
-    row.featured_product_display_order === null &&
-    row.image_storage_path === null &&
-    row.image_alt_text === null
-  );
-}
-
 function isProductRow(row: PublicHomepageRow): row is FeaturedProductRow {
-  const hasValidImage =
-    (row.image_storage_path === null && row.image_alt_text === null) ||
-    (isNonEmptyString(row.image_storage_path) &&
-      isNonEmptyString(row.image_alt_text));
-
   return (
     isSectionRow(row) &&
     isNonEmptyString(row.featured_product_id) &&
@@ -153,71 +224,72 @@ function isProductRow(row: PublicHomepageRow): row is FeaturedProductRow {
     Number.isInteger(row.featured_product_base_price_minor) &&
     row.featured_product_base_price_minor >= 0 &&
     isOrder(row.featured_product_display_order) &&
-    hasValidImage
+    hasValidOptionalImage(getFeaturedImageFields(row))
+  );
+}
+
+function hasValidHomepageImages(row: PublicHomepageRow) {
+  return homepageMediaPrefixes.every((prefix) =>
+    hasValidOptionalImage(getImageFields(row, prefix)),
   );
 }
 
 function hasSameHero(
   row: PublicHomepageRow,
-  content: PublishedHomepageContent,
+  firstRow: PublicHomepageRow,
 ) {
   return (
-    row.hero_title === content.hero.title &&
-    row.hero_subtitle === content.hero.subtitle &&
-    row.hero_button_label === content.hero.buttonLabel &&
-    row.hero_button_url === content.hero.buttonUrl &&
-    row.hero_image_path === content.hero.imagePath
+    row.hero_title === firstRow.hero_title &&
+    row.hero_subtitle === firstRow.hero_subtitle &&
+    row.hero_button_label === firstRow.hero_button_label &&
+    row.hero_button_url === firstRow.hero_button_url &&
+    row.hero_image_path === firstRow.hero_image_path
   );
 }
 
-function getErrorDiagnostic(error: unknown) {
-  const status =
-    typeof error === "object" &&
-    error !== null &&
-    "status" in error &&
-    typeof error.status === "number"
-      ? error.status
-      : undefined;
+function hasSameHomepageImages(
+  row: PublicHomepageRow,
+  firstRow: PublicHomepageRow,
+) {
+  return homepageMediaPrefixes.every((prefix) => {
+    const image = getImageFields(row, prefix);
+    const firstImage = getImageFields(firstRow, prefix);
+
+    return (
+      image.bucketId === firstImage.bucketId &&
+      image.path === firstImage.path &&
+      image.altText === firstImage.altText &&
+      image.width === firstImage.width &&
+      image.height === firstImage.height
+    );
+  });
+}
+
+function mapHomepageImage(
+  fields: ImageFields,
+  imageKey: string,
+): HomepageImage | null {
+  if (!isValidImage(fields)) {
+    return null;
+  }
+
+  const storageImage = {
+    bucketId: fields.bucketId,
+    path: fields.path,
+  };
 
   return {
-    name: error instanceof Error ? error.name : "UnknownError",
-    ...(status !== undefined ? { status } : {}),
+    url: createContentImageUrl("homepage", imageKey, storageImage),
+    altText: fields.altText,
+    width: fields.width,
+    height: fields.height,
+    storageImage,
   };
 }
 
-async function getSignedImages(
-  supabase: SupabaseServerClient,
-  paths: readonly string[],
-) {
-  if (paths.length === 0) {
-    return new Map<string, string>();
-  }
-
-  try {
-    const signedImages = await supabase.createSignedImageUrls(
-      paths,
-      signedImageLifetimeSeconds,
-    );
-
-    return new Map(
-      signedImages.map((image) => [image.path, image.signedUrl]),
-    );
-  } catch (error) {
-    console.error(
-      "[public-homepage] featured image signing failed",
-      getErrorDiagnostic(error),
-    );
-    return new Map<string, string>();
-  }
-}
-
-function mapProduct(
-  row: FeaturedProductRow,
-  signedImageByPath: ReadonlyMap<string, string>,
-): MenuProduct {
-  const signedImage = row.image_storage_path
-    ? signedImageByPath.get(row.image_storage_path)
-    : undefined;
+function mapProduct(row: FeaturedProductRow): HomepageFeaturedProduct {
+  const imageFields = getFeaturedImageFields(row);
+  const image = mapHomepageImage(imageFields, row.featured_product_id);
 
   return {
     id: row.featured_product_id,
@@ -225,9 +297,15 @@ function mapProduct(
     name: row.featured_product_name,
     description: row.featured_product_description,
     price: row.featured_product_base_price_minor / 100,
-    image:
-      signedImage ?? getProductImageFallback(row.featured_product_slug),
-    imageAlt: row.image_alt_text ?? row.featured_product_name,
+    image: image
+      ? createContentImageUrl(
+          "signature",
+          row.featured_product_id,
+          image.storageImage,
+        )
+      : undefined,
+    imageAlt: image?.altText ?? row.featured_product_name,
+    storageImage: image?.storageImage,
   };
 }
 
@@ -245,7 +323,7 @@ export function createPublishedHomepageRepository(
 
       const firstRow = rows[0];
 
-      if (!isHeroRow(firstRow)) {
+      if (!isHeroRow(firstRow) || !hasValidHomepageImages(firstRow)) {
         throw new PublishedHomepageRepositoryError();
       }
 
@@ -255,31 +333,19 @@ export function createPublishedHomepageRepository(
         throw new PublishedHomepageRepositoryError();
       }
 
-      const content: PublishedHomepageContent = {
-        hero: {
-          title: firstRow.hero_title,
-          subtitle: firstRow.hero_subtitle,
-          buttonLabel: firstRow.hero_button_label,
-          buttonUrl: firstRow.hero_button_url,
-          imagePath: firstRow.hero_image_path,
-        },
-        featuredSection: hasSection
-          ? {
-              eyebrow: firstRow.featured_section_eyebrow as string,
-              title: firstRow.featured_section_title as string,
-              displayOrder: firstRow.featured_section_display_order as number,
-              products: [],
-            }
-          : null,
-      };
       const productRows = new Map<string, FeaturedProductRow>();
 
       rows.forEach((row) => {
-        if (!isHeroRow(row) || !hasSameHero(row, content)) {
+        if (
+          !isHeroRow(row) ||
+          !hasSameHero(row, firstRow) ||
+          !hasValidHomepageImages(row) ||
+          !hasSameHomepageImages(row, firstRow)
+        ) {
           throw new PublishedHomepageRepositoryError();
         }
 
-        if (!content.featuredSection) {
+        if (!hasSection) {
           if (!isEmptySectionRow(row)) {
             throw new PublishedHomepageRepositoryError();
           }
@@ -289,10 +355,11 @@ export function createPublishedHomepageRepository(
 
         if (
           !isSectionRow(row) ||
-          row.featured_section_eyebrow !== content.featuredSection.eyebrow ||
-          row.featured_section_title !== content.featuredSection.title ||
+          row.featured_section_eyebrow !==
+            firstRow.featured_section_eyebrow ||
+          row.featured_section_title !== firstRow.featured_section_title ||
           row.featured_section_display_order !==
-            content.featuredSection.displayOrder
+            firstRow.featured_section_display_order
         ) {
           throw new PublishedHomepageRepositoryError();
         }
@@ -308,38 +375,64 @@ export function createPublishedHomepageRepository(
         productRows.set(row.featured_product_id, row);
       });
 
-      if (!content.featuredSection) {
-        return content;
+      if (productRows.size > maximumFeaturedProducts) {
+        throw new PublishedHomepageRepositoryError();
       }
 
-      const imagePaths = [
-        ...new Set(
-          [...productRows.values()].flatMap((product) =>
-            product.image_storage_path ? [product.image_storage_path] : [],
-          ),
-        ),
-      ];
-      const signedImageByPath = await getSignedImages(supabase, imagePaths);
       const orderedProducts: OrderedProduct[] = [...productRows.values()].map(
         (row) => ({
           order: row.featured_product_display_order,
-          product: mapProduct(row, signedImageByPath),
+          product: mapProduct(row),
         }),
       );
-      const featuredSection: HomepageFeaturedSection = {
-        ...content.featuredSection,
-        products: orderedProducts
-          .sort(
-            (left, right) =>
-              left.order - right.order ||
-              left.product.id.localeCompare(right.product.id),
-          )
-          .map(({ product }) => product),
-      };
+      const featuredSection: HomepageFeaturedSection | null = hasSection
+        ? {
+            eyebrow: firstRow.featured_section_eyebrow as string,
+            title: firstRow.featured_section_title as string,
+            displayOrder: firstRow.featured_section_display_order as number,
+            products: orderedProducts
+              .sort(
+                (left, right) =>
+                  left.order - right.order ||
+                  left.product.id.localeCompare(right.product.id),
+              )
+              .map(({ product }) => product),
+          }
+        : null;
 
       return {
-        ...content,
+        hero: {
+          title: firstRow.hero_title,
+          subtitle: firstRow.hero_subtitle,
+          buttonLabel: firstRow.hero_button_label,
+          buttonUrl: firstRow.hero_button_url,
+          imagePath: firstRow.hero_image_path,
+        },
         featuredSection,
+        experienceImages: {
+          morning: mapHomepageImage(
+            getImageFields(firstRow, "experience_morning"),
+            "experience-morning",
+          ),
+          afternoon: mapHomepageImage(
+            getImageFields(firstRow, "experience_afternoon"),
+            "experience-afternoon",
+          ),
+          evening: mapHomepageImage(
+            getImageFields(firstRow, "experience_evening"),
+            "experience-evening",
+          ),
+        },
+        aboutImages: {
+          primary: mapHomepageImage(
+            getImageFields(firstRow, "about_primary"),
+            "about-primary",
+          ),
+          secondary: mapHomepageImage(
+            getImageFields(firstRow, "about_secondary"),
+            "about-secondary",
+          ),
+        },
       };
     },
   };

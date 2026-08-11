@@ -12,7 +12,7 @@ const signedImageCacheRefreshSeconds = 30 * 60;
 const getCachedPublishedGallery = unstable_cache(
   async () =>
     createPublishedGalleryRepository(createSupabaseServerClient()).list(),
-  [publicCacheTags.gallery],
+  [publicCacheTags.gallery, "content-image-v1"],
   {
     tags: [publicCacheTags.gallery],
     revalidate: signedImageCacheRefreshSeconds,

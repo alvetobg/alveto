@@ -105,6 +105,11 @@ const nextConfig: NextConfig = {
   poweredByHeader: false,
   images: {
     qualities: [75, 85],
+    localPatterns: [
+      { pathname: "/images/**" },
+      { pathname: "/logos/**" },
+      { pathname: "/content-image/**" },
+    ],
     remotePatterns: getSupabaseImageRemotePatterns(),
   },
   async headers() {

@@ -7,10 +7,10 @@ type PublishedMenuRpcRow =
   Database["public"]["Functions"]["get_alveto_published_menu"]["Returns"][number];
 
 type PublishedHomepageRpcRow =
-  Database["public"]["Functions"]["get_alveto_published_homepage"]["Returns"][number];
+  Database["public"]["Functions"]["get_alveto_published_homepage_v2"]["Returns"][number];
 
 type PublishedGalleryRpcRow =
-  Database["public"]["Functions"]["get_alveto_published_gallery"]["Returns"][number];
+  Database["public"]["Functions"]["get_alveto_published_gallery_v2"]["Returns"][number];
 
 type PublicReservationSettingsRpcRow =
   Database["public"]["Functions"]["get_alveto_public_reservation_settings"]["Returns"][number];
@@ -28,11 +28,51 @@ type SignedImage = Readonly<{
   signedUrl: string;
 }>;
 
+export type PublicStorageBucket = "product-images" | "site-media";
+
+export type StorageImageReference = Readonly<{
+  bucketId: PublicStorageBucket;
+  path: string;
+}>;
+
+export type SignedStorageImage = StorageImageReference &
+  Readonly<{
+    signedUrl: string;
+  }>;
+
 type StorageSignedUrlPayload = Readonly<{
   signedURL?: unknown;
 }>;
 
 const publicRequestTimeoutMs = 8_000;
+const allowedPublicStorageBuckets = new Set<PublicStorageBucket>([
+  "product-images",
+  "site-media",
+]);
+
+export function getStorageImageKey(
+  image: StorageImageReference,
+) {
+  return `${image.bucketId}:${image.path}`;
+}
+
+function isPublicStorageBucket(value: string): value is PublicStorageBucket {
+  return allowedPublicStorageBuckets.has(value as PublicStorageBucket);
+}
+
+function isSafeStorageObjectPath(path: string) {
+  const segments = path.split("/");
+
+  return (
+    path.length > 0 &&
+    path.length <= 1_024 &&
+    !path.startsWith("/") &&
+    !path.includes("\\") &&
+    segments.every(
+      (segment) => segment.length > 0 && segment !== "." && segment !== "..",
+    )
+  );
+}
 
 export class SupabaseServerClientError extends Error {
   constructor(
@@ -94,6 +134,93 @@ async function fetchPublicSupabase(
 export function createSupabaseServerClient() {
   const environment = getPublicContentEnvironment();
   const headers = createHeaders(environment.supabasePublishableKey);
+
+  async function signImagesInBucket(
+    bucketId: PublicStorageBucket,
+    paths: readonly string[],
+    expiresIn: number,
+  ): Promise<SignedStorageImage[]> {
+    if (
+      paths.length === 0 ||
+      !Number.isInteger(expiresIn) ||
+      expiresIn <= 0 ||
+      paths.some((path) => !isSafeStorageObjectPath(path))
+    ) {
+      if (paths.length === 0) {
+        return [];
+      }
+
+      throw new SupabaseServerClientError("sign-images");
+    }
+
+    const signingHeaders = new Headers(headers);
+    signingHeaders.set("Content-Type", "application/json");
+
+    const payload = await parseJson(
+      await fetchPublicSupabase(
+        "sign-images",
+        new URL(
+          `/storage/v1/object/sign/${bucketId}`,
+          environment.supabaseUrl,
+        ),
+        {
+          method: "POST",
+          headers: signingHeaders,
+          body: JSON.stringify({
+            expiresIn,
+            paths,
+          }),
+          cache: "no-store",
+        },
+      ),
+      "sign-images",
+    );
+
+    if (!Array.isArray(payload) || payload.length !== paths.length) {
+      throw new SupabaseServerClientError("sign-images");
+    }
+
+    return payload.map((entry: StorageSignedUrlPayload, index) => {
+      if (
+        typeof entry !== "object" ||
+        entry === null ||
+        typeof entry.signedURL !== "string"
+      ) {
+        throw new SupabaseServerClientError("sign-images");
+      }
+
+      const signedUrl = new URL(
+        `/storage/v1${entry.signedURL}`,
+        environment.supabaseUrl,
+      );
+      const environmentUrl = new URL(environment.supabaseUrl);
+      const signedPathPrefix = `/storage/v1/object/sign/${bucketId}/`;
+      let signedObjectPath: string;
+
+      try {
+        signedObjectPath = decodeURIComponent(
+          signedUrl.pathname.slice(signedPathPrefix.length),
+        );
+      } catch {
+        throw new SupabaseServerClientError("sign-images");
+      }
+
+      if (
+        !entry.signedURL.startsWith(`/object/sign/${bucketId}/`) ||
+        signedUrl.origin !== environmentUrl.origin ||
+        !signedUrl.pathname.startsWith(signedPathPrefix) ||
+        signedObjectPath !== paths[index]
+      ) {
+        throw new SupabaseServerClientError("sign-images");
+      }
+
+      return {
+        bucketId,
+        path: paths[index],
+        signedUrl: signedUrl.toString(),
+      };
+    });
+  }
 
   return {
     async getPublicSiteSettingsRows(): Promise<PublicSiteSettingsRpcRow[]> {
@@ -200,7 +327,7 @@ export function createSupabaseServerClient() {
 
     async getPublishedGalleryRows(): Promise<PublishedGalleryRpcRow[]> {
       const requestUrl = new URL(
-        "/rest/v1/rpc/get_alveto_published_gallery",
+        "/rest/v1/rpc/get_alveto_published_gallery_v2",
         environment.supabaseUrl,
       );
       const requestHeaders = new Headers(headers);
@@ -225,7 +352,7 @@ export function createSupabaseServerClient() {
 
     async getPublishedHomepageRows(): Promise<PublishedHomepageRpcRow[]> {
       const requestUrl = new URL(
-        "/rest/v1/rpc/get_alveto_published_homepage",
+        "/rest/v1/rpc/get_alveto_published_homepage_v2",
         environment.supabaseUrl,
       );
       const requestHeaders = new Headers(headers);
@@ -277,52 +404,43 @@ export function createSupabaseServerClient() {
       paths: readonly string[],
       expiresIn: number,
     ): Promise<SignedImage[]> {
-      if (paths.length === 0) {
-        return [];
-      }
-
-      const signingHeaders = new Headers(headers);
-      signingHeaders.set("Content-Type", "application/json");
-
-      const payload = await parseJson(
-        await fetchPublicSupabase(
-          "sign-images",
-          new URL(
-            "/storage/v1/object/sign/product-images",
-            environment.supabaseUrl,
-          ),
-          {
-            method: "POST",
-            headers: signingHeaders,
-            body: JSON.stringify({
-              expiresIn,
-              paths,
-            }),
-            cache: "no-store",
-          },
-        ),
-        "sign-images",
+      return (await signImagesInBucket("product-images", paths, expiresIn)).map(
+        ({ path, signedUrl }) => ({ path, signedUrl }),
       );
+    },
 
-      if (!Array.isArray(payload) || payload.length !== paths.length) {
-        throw new SupabaseServerClientError("sign-images");
-      }
+    async createSignedStorageImageUrls(
+      images: readonly StorageImageReference[],
+      expiresIn: number,
+    ): Promise<SignedStorageImage[]> {
+      const uniqueImages = new Map<string, StorageImageReference>();
 
-      return payload.map((entry: StorageSignedUrlPayload, index) => {
+      for (const image of images) {
         if (
-          typeof entry !== "object" ||
-          entry === null ||
-          typeof entry.signedURL !== "string" ||
-          !entry.signedURL.startsWith("/object/sign/product-images/")
+          !isPublicStorageBucket(image.bucketId) ||
+          !isSafeStorageObjectPath(image.path)
         ) {
           throw new SupabaseServerClientError("sign-images");
         }
 
-        return {
-          path: paths[index],
-          signedUrl: `${environment.supabaseUrl}/storage/v1${entry.signedURL}`,
-        };
-      });
+        uniqueImages.set(getStorageImageKey(image), image);
+      }
+
+      const groupedPaths = new Map<PublicStorageBucket, string[]>();
+
+      for (const image of uniqueImages.values()) {
+        const bucketPaths = groupedPaths.get(image.bucketId) ?? [];
+        bucketPaths.push(image.path);
+        groupedPaths.set(image.bucketId, bucketPaths);
+      }
+
+      const signedGroups = await Promise.all(
+        [...groupedPaths].map(([bucketId, paths]) =>
+          signImagesInBucket(bucketId, paths, expiresIn),
+        ),
+      );
+
+      return signedGroups.flat();
     },
   };
 }

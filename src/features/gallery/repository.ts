@@ -5,10 +5,14 @@ import type {
   PublishedGalleryItem,
 } from "@/features/gallery/types";
 import type { Database } from "@/lib/supabase/database.types";
-import type { SupabaseServerClient } from "@/lib/supabase/server";
+import { createContentImageUrl } from "@/lib/content-images";
+import {
+  type PublicStorageBucket,
+  type SupabaseServerClient,
+} from "@/lib/supabase/server";
 
 type GeneratedGalleryRow =
-  Database["public"]["Functions"]["get_alveto_published_gallery"]["Returns"][number];
+  Database["public"]["Functions"]["get_alveto_published_gallery_v2"]["Returns"][number];
 
 type RuntimeGalleryRow = Omit<
   GeneratedGalleryRow,
@@ -19,11 +23,14 @@ type RuntimeGalleryRow = Omit<
   item_description: string | null;
 };
 
-const signedUrlLifetimeSeconds = 60 * 60;
 const allowedImageMimeTypes = new Set([
   "image/jpeg",
   "image/png",
   "image/webp",
+]);
+const allowedImageBuckets = new Set<PublicStorageBucket>([
+  "product-images",
+  "site-media",
 ]);
 
 export class GalleryPublicRepositoryError extends Error {
@@ -39,6 +46,13 @@ function isNonEmptyString(value: unknown): value is string {
 
 function isOptionalText(value: unknown): value is string | null {
   return value === null || isNonEmptyString(value);
+}
+
+function isPublicStorageBucket(value: unknown): value is PublicStorageBucket {
+  return (
+    typeof value === "string" &&
+    allowedImageBuckets.has(value as PublicStorageBucket)
+  );
 }
 
 function isGalleryRow(value: unknown): value is RuntimeGalleryRow {
@@ -59,6 +73,7 @@ function isGalleryRow(value: unknown): value is RuntimeGalleryRow {
     isNonEmptyString(row.item_alt_text) &&
     isOptionalText(row.item_caption) &&
     Number.isInteger(row.item_display_order) &&
+    isPublicStorageBucket(row.image_bucket_id) &&
     isNonEmptyString(row.image_storage_path) &&
     isNonEmptyString(row.image_mime_type) &&
     allowedImageMimeTypes.has(row.image_mime_type) &&
@@ -86,14 +101,6 @@ export function createPublishedGalleryRepository(
         return [];
       }
 
-      const paths = [...new Set(rows.map((row) => row.image_storage_path))];
-      const signedImages = await supabase.createSignedImageUrls(
-        paths,
-        signedUrlLifetimeSeconds,
-      );
-      const signedUrlByPath = new Map(
-        signedImages.map((image) => [image.path, image.signedUrl]),
-      );
       const itemIds = new Set<string>();
       const collections = new Map<string, PublishedGalleryCollection>();
 
@@ -103,12 +110,10 @@ export function createPublishedGalleryRepository(
         }
 
         itemIds.add(row.item_id);
-        const imageUrl = signedUrlByPath.get(row.image_storage_path);
-
-        if (!imageUrl) {
-          throw new GalleryPublicRepositoryError();
-        }
-
+        const storageImage = {
+          bucketId: row.image_bucket_id as PublicStorageBucket,
+          path: row.image_storage_path,
+        };
         const item = {
           id: row.item_id,
           title: row.item_title.trim(),
@@ -116,9 +121,10 @@ export function createPublishedGalleryRepository(
           altText: row.item_alt_text.trim(),
           caption: row.item_caption?.trim() ?? null,
           displayOrder: row.item_display_order,
-          imageUrl,
+          imageUrl: createContentImageUrl("gallery", row.item_id, storageImage),
           imageWidth: row.image_width,
           imageHeight: row.image_height,
+          storageImage,
         };
         const existingCollection = collections.get(row.collection_id);
 

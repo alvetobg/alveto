@@ -61,7 +61,9 @@ export default async function Home() {
           hasPublishedSignature={hasSignature}
           reservationSettings={reservationSettings}
         />
-        <Experience />
+        <Experience
+          images={homepageResult.content?.experienceImages ?? null}
+        />
         {featuredSection && featuredSection.products.length > 0 ? (
           <Signature
             eyebrow={featuredSection.eyebrow}
@@ -72,6 +74,7 @@ export default async function Home() {
         <About
           reservationSettings={reservationSettings}
           siteSettings={siteSettings}
+          images={homepageResult.content?.aboutImages ?? null}
         />
         <Gallery collections={galleryResult.collections} />
         <Reservation

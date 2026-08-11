@@ -12,11 +12,6 @@ type SignatureProps = Readonly<{
   products: readonly MenuProduct[];
 }>;
 
-const repeatedDaypartFallbacks = new Set([
-  "/images/menu/breakfast/waffle-benedict.webp",
-  "/images/menu/sweet/raffaello-raspberry.webp",
-]);
-
 export default function Signature({
   eyebrow,
   title,
@@ -38,11 +33,7 @@ export default function Signature({
 
         <div className="mt-12 md:mt-16 lg:mt-20">
           {products.map((product, index) => {
-            const candidateImage = getOptionalImageSource(product.image);
-            const imageSource =
-              candidateImage && !repeatedDaypartFallbacks.has(candidateImage)
-                ? candidateImage
-                : null;
+            const imageSource = getOptionalImageSource(product.image);
 
             return imageSource ? (
               <article
@@ -62,7 +53,7 @@ export default function Signature({
                     fill
                     quality={85}
                     sizes="(max-width: 767px) calc(100vw - 40px), (max-width: 1023px) 58vw, 680px"
-                    className="object-cover transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] motion-safe:group-hover:scale-[1.012] motion-reduce:transition-none"
+                    className="object-cover md:object-[50%_68%] transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] motion-safe:group-hover:scale-[1.012] motion-reduce:transition-none"
                   />
                 </div>
 

@@ -4,35 +4,43 @@ import PremiumReveal from "@/components/animations/PremiumReveal";
 import Heading from "@/components/ui/Heading";
 import PremiumContainer from "@/components/ui/PremiumContainer";
 import Section from "@/components/ui/Section";
+import type { HomepageExperienceImages } from "@/features/homepage/types";
 
 const moments = [
   {
+    imageKey: "morning",
     number: "01",
     title: "Morning",
-    image: "/images/experience/morning.webp",
-    alt: "Brunch served at Alveto in the morning",
+    fallbackImage: "/images/experience/morning.webp",
+    fallbackAlt: "Brunch served at Alveto in the morning",
     position: "moment-focus-morning",
     text: "Fresh coffee, artisan breakfast and slow mornings made to be enjoyed.",
   },
   {
+    imageKey: "afternoon",
     number: "02",
     title: "Afternoon",
-    image: "/images/experience/afternoon.webp",
-    alt: "Alveto dessert served in the afternoon",
+    fallbackImage: "/images/experience/afternoon.webp",
+    fallbackAlt: "Alveto dessert served in the afternoon",
     position: "moment-focus-afternoon",
     text: "Brunch favorites, waffles and signature creations for every taste.",
   },
   {
+    imageKey: "evening",
     number: "03",
     title: "Evening",
-    image: "/images/experience/evening.webp",
-    alt: "Cocktail at Alveto in the evening",
+    fallbackImage: "/images/experience/evening.webp",
+    fallbackAlt: "Cocktail at Alveto in the evening",
     position: "moment-focus-evening",
     text: "Cocktails, desserts and warm conversations as the day comes to an end.",
   },
 ] as const;
 
-export default function Experience() {
+type ExperienceProps = Readonly<{
+  images: HomepageExperienceImages | null;
+}>;
+
+export default function Experience({ images }: ExperienceProps) {
   return (
     <Section id="experience" className="bg-cream">
       <PremiumContainer>
@@ -50,13 +58,22 @@ export default function Experience() {
         </div>
 
         <ol className="mt-12 space-y-16 md:mt-16 md:space-y-20 lg:mt-20 lg:space-y-24">
-          {moments.map((moment, index) => (
-            <li key={moment.title}>
-              <PremiumReveal>
-                <Moment {...moment} reverse={index % 2 === 1} />
-              </PremiumReveal>
-            </li>
-          ))}
+          {moments.map((moment, index) => {
+            const cmsImage = images?.[moment.imageKey];
+
+            return (
+              <li key={moment.title}>
+                <PremiumReveal>
+                  <Moment
+                    {...moment}
+                    image={cmsImage?.url ?? moment.fallbackImage}
+                    alt={cmsImage?.altText ?? moment.fallbackAlt}
+                    reverse={index % 2 === 1}
+                  />
+                </PremiumReveal>
+              </li>
+            );
+          })}
         </ol>
       </PremiumContainer>
     </Section>
@@ -71,7 +88,11 @@ function Moment({
   position,
   text,
   reverse,
-}: (typeof moments)[number] & { reverse: boolean }) {
+}: (typeof moments)[number] & {
+  image: string;
+  alt: string;
+  reverse: boolean;
+}) {
   return (
     <article className="moment-layout">
       <div

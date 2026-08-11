@@ -32,7 +32,7 @@ const getCachedPublishedHomepage = unstable_cache(
 
     return repository.get();
   },
-  [publicCacheTags.homepage],
+  [publicCacheTags.homepage, "content-image-v1"],
   {
     tags: [publicCacheTags.homepage],
     revalidate: signedImageCacheRefreshSeconds,

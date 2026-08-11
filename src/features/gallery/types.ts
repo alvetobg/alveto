@@ -1,3 +1,5 @@
+import type { StorageImageReference } from "@/lib/supabase/server";
+
 export interface PublishedGalleryItem {
   id: string;
   title: string;
@@ -8,6 +10,7 @@ export interface PublishedGalleryItem {
   imageUrl: string;
   imageWidth: number;
   imageHeight: number;
+  storageImage: StorageImageReference;
 }
 
 export interface PublishedGalleryCollection {
