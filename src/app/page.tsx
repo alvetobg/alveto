@@ -1,11 +1,13 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
+
+import "./homepage.css";
 
 import Reservation from "@/components/home/Reservation";
 import Gallery from "@/components/home/Gallery";
-import Footer from "@/components/layout/Footer";
+import HomepageFooter from "@/components/layout/HomepageFooter";
 import About from "@/components/home/About";
 import Signature from "@/components/home/Signature";
-import Navbar from "@/components/layout/Navbar";
+import HomepageNavbar from "@/components/layout/HomepageNavbar";
 import Hero from "@/components/home/Hero";
 import Experience from "@/components/home/Experience";
 import StructuredData from "@/components/seo/StructuredData";
@@ -15,6 +17,12 @@ import { getPublicReservationSettings } from "@/features/reservations/service";
 import { createPageMetadata } from "@/features/seo/metadata";
 import { getPublicSeo } from "@/features/seo/service";
 import { getPublicSiteSettings } from "@/features/site-settings/service";
+
+export const viewport: Viewport = {
+  themeColor: "#D9A066",
+  colorScheme: "light",
+  viewportFit: "cover",
+};
 
 export async function generateMetadata(): Promise<Metadata> {
   return createPageMetadata("homepage", await getPublicSeo());
@@ -33,6 +41,7 @@ export default async function Home() {
     getPublicSiteSettings(),
   ]);
   const featuredSection = homepageResult.content?.featuredSection;
+  const hasSignature = Boolean(featuredSection?.products.length);
   const reservationSettings = reservationResult.settings;
   const siteSettings = siteSettingsResult.settings;
 
@@ -42,23 +51,22 @@ export default async function Home() {
         reservationSettings={reservationSettings}
         siteSettings={siteSettings}
       />
-      <Navbar
+      <HomepageNavbar
         reservationSettings={reservationSettings}
         siteSettings={siteSettings}
       />
       <main id="main-content" tabIndex={-1} className="focus:outline-none">
         <Hero
           content={homepageResult.content?.hero ?? null}
-          state={homepageResult.state}
+          hasPublishedSignature={hasSignature}
           reservationSettings={reservationSettings}
         />
         <Experience />
-        {featuredSection ? (
+        {featuredSection && featuredSection.products.length > 0 ? (
           <Signature
             eyebrow={featuredSection.eyebrow}
             title={featuredSection.title}
             products={featuredSection.products}
-            state={homepageResult.state}
           />
         ) : null}
         <About
@@ -71,7 +79,7 @@ export default async function Home() {
           siteSettings={siteSettings}
         />
       </main>
-      <Footer
+      <HomepageFooter
         reservationSettings={reservationSettings}
         siteSettings={siteSettings}
       />

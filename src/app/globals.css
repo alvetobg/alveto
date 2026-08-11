@@ -1,5 +1,19 @@
 @import "tailwindcss";
 
+/* Homepage utilities are compiled into its route stylesheet so they do not
+   increase the shared CSS payload used by /menu. */
+@source not "./page.tsx";
+@source not "../components/animations/PremiumReveal.tsx";
+@source not "../components/home";
+@source not "../components/layout/HomepageFooter.tsx";
+@source not "../components/layout/HomepageMobileMenu.tsx";
+@source not "../components/layout/HomepageNavbar.tsx";
+@source not "../components/ui/Heading.tsx";
+@source not "../components/ui/Icons.tsx";
+@source not "../components/ui/PremiumButton.tsx";
+@source not "../components/ui/PremiumContainer.tsx";
+@source not "../components/ui/Section.tsx";
+
 :root {
   /* Colors */
   --background: #f7f4ef;

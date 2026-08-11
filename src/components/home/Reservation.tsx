@@ -1,12 +1,9 @@
-import Image from "next/image";
-
-import FadeIn from "@/components/animations/FadeIn";
-
-import Container from "@/components/ui/Container";
-import Section from "@/components/ui/Section";
 import Heading from "@/components/ui/Heading";
-import Button from "@/components/ui/Button";
+import PremiumButton from "@/components/ui/PremiumButton";
+import PremiumContainer from "@/components/ui/PremiumContainer";
+import Section from "@/components/ui/Section";
 import type { PublicReservationSettings } from "@/features/reservations/types";
+import { formatAddress } from "@/features/site-settings/presentation";
 import type { PublicSiteSettings } from "@/features/site-settings/types";
 
 type ReservationProps = Readonly<{
@@ -22,71 +19,83 @@ export default function Reservation({
     return null;
   }
 
+  const address = formatAddress(siteSettings);
+  const phoneNumber = siteSettings.publicPhone ?? settings.phoneNumber;
   const phoneHref = siteSettings.phoneHref ?? settings.phoneHref;
-  const whatsappHref =
-    siteSettings.socialLinks.find((link) => link.platform === "whatsapp")?.url ??
-    settings.whatsappHref;
+  const email = siteSettings.publicEmail ?? settings.email;
 
   return (
-    <Section
-      id="reservation"
-      className="relative overflow-hidden text-white"
-    >
-      <Image
-        src="/images/hero.jpg"
-        alt="Alveto"
-        fill
-        sizes="100vw"
-        className="object-cover scale-105"
-      />
-
-      <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/65 to-black/85" />
-
-      <Container>
-        <FadeIn>
-          <div className="relative z-10 mx-auto max-w-4xl py-24 text-center md:py-36">
-            <p className="mb-5 text-sm font-semibold uppercase tracking-[8px] text-primary">
-              RESERVATION
+    <Section id="reservation" className="bg-cream">
+      <PremiumContainer>
+        <div className="rounded-[22px] bg-primary px-6 py-10 text-dark min-[375px]:px-8 md:rounded-[26px] md:px-12 md:py-14 lg:grid lg:grid-cols-12 lg:items-end lg:gap-12 lg:px-16 lg:py-16">
+          <div className="lg:col-span-6">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-dark/70 md:text-xs">
+              Reservation
             </p>
-
-            <Heading className="text-white">
-              Reserve Your
+            <Heading className="mt-4 text-dark">
+              Reserve Your{" "}
               <br />
               Experience
             </Heading>
+          </div>
 
+          <div className="mt-7 lg:col-span-6 lg:mt-0">
             {settings.secondaryMessage ? (
-              <p className="mx-auto mt-8 max-w-2xl text-lg leading-9 text-white/75">
+              <p className="max-w-xl text-base leading-7 text-dark/80 md:text-lg md:leading-8">
                 {settings.secondaryMessage}
               </p>
             ) : null}
 
-            <div className="mt-14 flex flex-wrap justify-center gap-5">
-              <Button href={settings.reservationUrl}>
-                {settings.primaryCtaLabel}
-              </Button>
+            <PremiumButton
+              href={settings.reservationUrl}
+              variant="dark"
+              showArrow
+              className="mt-7 w-full sm:w-auto"
+            >
+              {settings.primaryCtaLabel}
+            </PremiumButton>
 
-              {phoneHref ? (
-                <Button href={phoneHref} variant="secondary">
-                  Call Us
-                </Button>
+            <div className="mt-8 flex flex-col gap-2 border-t border-dark/16 pt-6 text-sm leading-6 text-dark/78 sm:flex-row sm:flex-wrap sm:gap-x-6">
+              {address ? (
+                siteSettings.googleMapsUrl ? (
+                  <a
+                    href={siteSettings.googleMapsUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="transition-colors duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:text-dark"
+                  >
+                    {address}
+                  </a>
+                ) : (
+                  <span>{address}</span>
+                )
               ) : null}
-
-              {whatsappHref ? (
-                <Button href={whatsappHref} variant="secondary">
-                  WhatsApp
-                </Button>
+              {phoneNumber && phoneHref ? (
+                <a
+                  href={phoneHref}
+                  className="transition-colors duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:text-dark"
+                >
+                  {phoneNumber}
+                </a>
+              ) : null}
+              {email ? (
+                <a
+                  href={`mailto:${email}`}
+                  className="transition-colors duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:text-dark"
+                >
+                  {email}
+                </a>
               ) : null}
             </div>
 
             {settings.bookingInstructions ? (
-              <p className="mx-auto mt-8 max-w-2xl text-sm leading-7 text-white/65">
+              <p className="mt-5 max-w-xl text-xs leading-5 text-dark/75">
                 {settings.bookingInstructions}
               </p>
             ) : null}
           </div>
-        </FadeIn>
-      </Container>
+        </div>
+      </PremiumContainer>
     </Section>
   );
 }

@@ -14,7 +14,7 @@ export default function Section({
   return (
     <section
       id={id}
-      className={`relative py-32 lg:py-40 ${className}`}
+      className={`relative scroll-mt-[96px] py-20 md:scroll-mt-[104px] md:py-24 lg:py-28 ${className}`}
     >
       {children}
     </section>

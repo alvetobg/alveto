@@ -1,11 +1,9 @@
 import Image from "next/image";
 
-import FadeIn from "@/components/animations/FadeIn";
-
-import Container from "@/components/ui/Container";
 import Heading from "@/components/ui/Heading";
+import PremiumButton from "@/components/ui/PremiumButton";
+import PremiumContainer from "@/components/ui/PremiumContainer";
 import Section from "@/components/ui/Section";
-import Button from "@/components/ui/Button";
 import type { PublicReservationSettings } from "@/features/reservations/types";
 import type { PublicSiteSettings } from "@/features/site-settings/types";
 
@@ -18,78 +16,79 @@ export default function About({
   reservationSettings,
   siteSettings,
 }: AboutProps) {
+  const canReserve = Boolean(
+    reservationSettings?.reservationsEnabled &&
+      reservationSettings.reservationUrl,
+  );
+
   return (
-    <Section id="about" className="bg-white">
-      <Container>
-        <div className="grid items-center gap-16 lg:grid-cols-2 lg:gap-24">
-          <FadeIn direction="left">
-            <div className="relative">
-              <div className="group relative h-[500px] overflow-hidden rounded-[40px] shadow-[0_25px_60px_rgba(0,0,0,0.08)] sm:h-[580px] lg:h-[720px] lg:rounded-[56px]">
-                <Image
-                  src="/images/about/interior-1.webp"
-                  alt="Alveto Interior"
-                  fill
-                  quality={85}
-                  sizes="(max-width: 767px) calc(100vw - 48px), (max-width: 1023px) calc(100vw - 64px), 544px"
-                  className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
-                />
-              </div>
-
-              <div className="absolute -bottom-12 -right-8 hidden h-60 w-48 overflow-hidden rounded-[28px] border-8 border-white shadow-[0_20px_50px_rgba(0,0,0,0.12)] lg:block xl:h-72 xl:w-56 xl:rounded-[36px]">
-                <Image
-                  src="/images/about/interior-2.webp"
-                  alt="Alveto Interior"
-                  fill
-                  quality={85}
-                  sizes="224px"
-                  className="object-cover transition-transform duration-700 hover:scale-105"
-                />
-              </div>
+    <Section id="about" className="bg-cream">
+      <PremiumContainer>
+        <div className="grid items-center gap-14 lg:grid-cols-2 lg:gap-20 xl:gap-24">
+          <div className="mx-auto w-full max-w-[620px] md:relative md:pb-12 lg:mx-0">
+            <div className="group relative aspect-[4/5] w-full overflow-hidden rounded-[20px] bg-[#eee8df] md:aspect-[4/3] md:w-[90%] md:rounded-[24px]">
+              <Image
+                src="/images/about/interior-1.webp"
+                alt="Warm dining and seating area inside Alveto"
+                fill
+                quality={85}
+                sizes="(max-width: 767px) calc(100vw - 40px), (max-width: 1023px) 560px, 560px"
+                className="object-cover object-[56%_52%] transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] md:object-[50%_52%] motion-safe:group-hover:scale-[1.012] motion-reduce:transition-none"
+              />
             </div>
-          </FadeIn>
 
-          <FadeIn direction="right">
-            <div className="lg:pl-8">
-              <p className="mb-4 uppercase tracking-[6px] text-primary">
-                ABOUT {siteSettings.businessName.toUpperCase()}
-              </p>
+            <div className="group relative ml-auto mt-4 aspect-[3/2] w-[68%] overflow-hidden rounded-[18px] bg-[#eee8df] md:absolute md:bottom-0 md:right-0 md:mt-0 md:w-[42%] md:rounded-[20px] md:border-[6px] md:border-cream">
+              <Image
+                src="/images/about/interior-2.webp"
+                alt="Interior details at Alveto"
+                fill
+                quality={85}
+                sizes="(max-width: 767px) 68vw, 260px"
+                className="object-cover object-[50%_48%] transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] motion-safe:group-hover:scale-[1.012] motion-reduce:transition-none"
+              />
+            </div>
+          </div>
 
-              <Heading className="text-left">
-                More Than
-                <br />
-                Just Coffee.
-              </Heading>
+          <div className="lg:py-8">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-primary md:text-xs">
+              About {siteSettings.businessName}
+            </p>
+            <Heading className="mt-4">
+              More Than{" "}
+              <br />
+              Just Coffee.
+            </Heading>
 
-              <p className="mt-8 text-lg leading-9 text-text">
-                {siteSettings.shortBrandDescription}
-              </p>
+            <p className="mt-6 max-w-xl text-base leading-8 text-text md:mt-8 md:text-lg md:leading-9">
+              {siteSettings.shortBrandDescription}
+            </p>
+            <p className="mt-5 max-w-xl text-base leading-8 text-text md:mt-6 md:text-lg md:leading-9">
+              Every detail, from the ingredients we choose to the interior we
+              created, exists for one reason: to make every visit feel worth
+              remembering.
+            </p>
 
-              <p className="mt-8 text-lg leading-9 text-text">
-                Every detail, from the ingredients we choose to the interior we
-                created, exists for one reason: to make every visit feel worth
-                remembering.
-              </p>
-
-              <div className="mt-12 flex flex-col gap-4 sm:flex-row sm:gap-5 lg:mt-16">
-                {reservationSettings?.reservationsEnabled &&
-                reservationSettings.reservationUrl ? (
-                  <Button href="#reservation" className="w-full sm:w-auto">
-                    {reservationSettings.primaryCtaLabel}
-                  </Button>
-                ) : null}
-
-                <Button
-                  href="/menu"
-                  variant="secondary"
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row md:mt-10">
+              {canReserve ? (
+                <PremiumButton
+                  href="#reservation"
                   className="w-full sm:w-auto"
                 >
-                  Explore Menu
-                </Button>
-              </div>
+                  {reservationSettings?.primaryCtaLabel}
+                </PremiumButton>
+              ) : null}
+              <PremiumButton
+                href="/menu"
+                variant="outline"
+                showArrow
+                className="w-full sm:w-auto"
+              >
+                Explore Menu
+              </PremiumButton>
             </div>
-          </FadeIn>
+          </div>
         </div>
-      </Container>
+      </PremiumContainer>
     </Section>
   );
 }
