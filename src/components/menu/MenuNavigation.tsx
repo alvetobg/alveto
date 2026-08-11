@@ -83,15 +83,9 @@ export default function MenuNavigation({
 
                     event.preventDefault();
                     setActive(category.id);
-                    const fixedOffset = window.innerWidth >= 768 ? 168 : 144;
-                    const scrollTarget = Math.max(
-                      0,
-                      target.offsetTop - fixedOffset,
-                    );
-
-                    window.scrollTo({
-                      top: scrollTarget,
+                    target.scrollIntoView({
                       behavior: "instant",
+                      block: "start",
                     });
                     window.history.replaceState(null, "", `#${category.id}`);
                   }}

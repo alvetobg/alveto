@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
@@ -10,6 +10,12 @@ import { getPublicReservationSettings } from "@/features/reservations/service";
 import { createPageMetadata } from "@/features/seo/metadata";
 import { getPublicSeo } from "@/features/seo/service";
 import { getPublicSiteSettings } from "@/features/site-settings/service";
+
+export const viewport: Viewport = {
+  themeColor: "#D9A066",
+  colorScheme: "light",
+  viewportFit: "cover",
+};
 
 export async function generateMetadata(): Promise<Metadata> {
   return createPageMetadata("menu", await getPublicSeo());

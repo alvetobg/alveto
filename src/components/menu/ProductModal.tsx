@@ -37,10 +37,20 @@ export default function ProductModal({
   useEffect(() => {
     if (!product) return;
 
+    const root = document.documentElement;
+    const body = document.body;
     const previouslyFocused = document.activeElement as HTMLElement | null;
-    const previousOverflow = document.body.style.overflow;
-    const previousPaddingRight = document.body.style.paddingRight;
-    const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+    const previousRootOverflow = root.style.overflow;
+    const previousRootOverscrollBehavior = root.style.overscrollBehavior;
+    const previousBodyOverflow = body.style.overflow;
+    const previousBodyOverscrollBehavior = body.style.overscrollBehavior;
+    const previousBodyPaddingRight = body.style.paddingRight;
+    const previousBodyPosition = body.style.position;
+    const previousBodyTop = body.style.top;
+    const previousBodyLeft = body.style.left;
+    const previousBodyWidth = body.style.width;
+    const scrollPosition = { x: window.scrollX, y: window.scrollY };
+    const scrollbarWidth = window.innerWidth - root.clientWidth;
     const modalRoot = modalRootRef.current;
     const backgroundElements = Array.from(document.body.children)
       .filter(
@@ -58,12 +68,22 @@ export default function ProductModal({
       element.setAttribute("aria-hidden", "true");
     });
 
-    document.body.style.overflow = "hidden";
+    root.style.overflow = "hidden";
+    root.style.overscrollBehavior = "none";
+    body.style.overflow = "hidden";
+    body.style.overscrollBehavior = "none";
+    body.style.position = "fixed";
+    body.style.top = `-${scrollPosition.y}px`;
+    body.style.left = `-${scrollPosition.x}px`;
+    body.style.width = "100%";
+
     if (scrollbarWidth > 0) {
-      document.body.style.paddingRight = `${scrollbarWidth}px`;
+      body.style.paddingRight = `${scrollbarWidth}px`;
     }
 
-    closeButtonRef.current?.focus();
+    const focusFrame = window.requestAnimationFrame(() => {
+      closeButtonRef.current?.focus({ preventScroll: true });
+    });
 
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
@@ -102,9 +122,17 @@ export default function ProductModal({
     document.addEventListener("keydown", onKeyDown);
 
     return () => {
-      document.body.style.overflow = previousOverflow;
-      document.body.style.paddingRight = previousPaddingRight;
+      window.cancelAnimationFrame(focusFrame);
       document.removeEventListener("keydown", onKeyDown);
+      root.style.overflow = previousRootOverflow;
+      root.style.overscrollBehavior = previousRootOverscrollBehavior;
+      body.style.overflow = previousBodyOverflow;
+      body.style.overscrollBehavior = previousBodyOverscrollBehavior;
+      body.style.paddingRight = previousBodyPaddingRight;
+      body.style.position = previousBodyPosition;
+      body.style.top = previousBodyTop;
+      body.style.left = previousBodyLeft;
+      body.style.width = previousBodyWidth;
 
       backgroundElements.forEach(({ element, inert, ariaHidden }) => {
         element.inert = inert;
@@ -116,8 +144,14 @@ export default function ProductModal({
       });
 
       if (previouslyFocused?.isConnected) {
-        previouslyFocused.focus();
+        previouslyFocused.focus({ preventScroll: true });
       }
+
+      window.scrollTo({
+        left: scrollPosition.x,
+        top: scrollPosition.y,
+        behavior: "instant",
+      });
     };
   }, [onClose, product]);
 
@@ -137,14 +171,14 @@ export default function ProductModal({
             duration: reduceMotion ? 0 : 0.15,
             ease: [0.22, 1, 0.36, 1],
           }}
-          className="fixed inset-0 z-[90] flex items-end justify-center p-1 sm:p-3 md:items-center md:p-6"
+          className="fixed inset-x-0 top-0 z-[90] box-border flex h-[100dvh] min-h-[100svh] items-end justify-center px-2 pb-[calc(0.75rem+env(safe-area-inset-bottom))] pt-[calc(0.75rem+env(safe-area-inset-top))] md:items-center md:px-6 md:pb-[calc(1.5rem+env(safe-area-inset-bottom))] md:pt-[calc(1.5rem+env(safe-area-inset-top))]"
         >
           <button
             type="button"
             tabIndex={-1}
             aria-label="Close product details"
             onClick={onClose}
-            className="absolute inset-0 bg-dark/72"
+            className="fixed inset-x-0 top-0 h-[100lvh] min-h-full bg-dark/80"
           />
 
           <motion.div
@@ -154,53 +188,53 @@ export default function ProductModal({
             aria-labelledby={titleId}
             aria-describedby={descriptionId}
             tabIndex={-1}
-            initial={reduceMotion ? false : { opacity: 0.98, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
+            initial={reduceMotion ? false : { opacity: 0.98 }}
+            animate={{ opacity: 1 }}
             exit={
               reduceMotion
-                ? { opacity: 1, y: 0 }
+                ? { opacity: 1 }
                 : {
                     opacity: 0.98,
-                    y: 8,
                     transition: {
-                      duration: 0.18,
+                      duration: 0.15,
                       ease: [0.22, 1, 0.36, 1],
                     },
                   }
             }
             transition={{
-              duration: reduceMotion ? 0 : 0.24,
+              duration: reduceMotion ? 0 : 0.2,
               ease: [0.22, 1, 0.36, 1],
             }}
-            className={`relative z-10 max-h-[calc(100dvh-0.25rem)] w-full overflow-hidden rounded-t-[24px] border border-dark/10 bg-cream shadow-[0_24px_80px_rgba(34,34,34,0.24)] sm:max-h-[calc(100dvh-1.5rem)] sm:rounded-[24px] md:max-h-[min(760px,calc(100dvh-3rem))] ${
+            className={`relative z-10 flex min-h-0 max-h-[min(760px,calc(100svh-1.5rem))] w-full flex-col overflow-hidden rounded-[24px] border border-dark/10 bg-cream shadow-[0_24px_80px_rgba(34,34,34,0.24)] ${
               imageSource ? "max-w-5xl" : "max-w-xl"
             }`}
           >
             <div
-              className={`min-h-0 overflow-y-auto overscroll-contain ${
+              className={`min-h-0 flex-1 touch-pan-y overflow-y-auto overscroll-contain ${
                 imageSource
                   ? "md:grid md:grid-cols-[minmax(0,0.44fr)_minmax(0,0.56fr)]"
                   : ""
               }`}
             >
               {imageSource ? (
-                <div className="relative aspect-[3/2] overflow-hidden bg-[#ece5db] md:aspect-auto md:min-h-[430px]">
+                <div className="relative h-[clamp(9rem,34svh,14rem)] shrink-0 overflow-hidden bg-[#ece5db] md:h-auto md:min-h-[430px]">
                   <Image
                     src={imageSource}
                     alt={product.imageAlt ?? product.name}
                     fill
                     quality={85}
-                    sizes="(max-width: 767px) calc(100vw - 8px), 440px"
+                    sizes="(max-width: 767px) calc(100vw - 16px), 440px"
                     className="object-cover"
                   />
                 </div>
               ) : null}
 
               <div
-                className="flex min-h-full flex-col justify-between p-6 pr-16 sm:p-8 sm:pr-20 md:p-10 md:pr-16"
-                style={{
-                  paddingBottom: "max(1.5rem, env(safe-area-inset-bottom))",
-                }}
+                className={`flex flex-col justify-between pr-16 md:min-h-full md:p-10 md:pr-16 ${
+                  imageSource
+                    ? "min-h-80 p-5"
+                    : "min-h-full p-6 sm:p-8 sm:pr-20"
+                }`}
               >
                 <div>
                   <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-primary">
@@ -214,13 +248,21 @@ export default function ProductModal({
                   </h2>
                   <p
                     id={descriptionId}
-                    className="mt-4 text-[15px] leading-7 text-text sm:mt-5 sm:text-base sm:leading-8"
+                    className={`text-[15px] text-text sm:text-base sm:leading-8 ${
+                      imageSource
+                        ? "mt-3 leading-6 md:mt-5"
+                        : "mt-4 leading-7 sm:mt-5"
+                    }`}
                   >
                     {product.description}
                   </p>
                 </div>
 
-                <div className="mt-8 border-t border-dark/12 pt-5 md:mt-10 md:pt-6">
+                <div
+                  className={`border-t border-dark/12 md:mt-10 md:pt-6 ${
+                    imageSource ? "mt-5 pt-4" : "mt-8 pt-5"
+                  }`}
+                >
                   <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-dark/55">
                     Price
                   </p>

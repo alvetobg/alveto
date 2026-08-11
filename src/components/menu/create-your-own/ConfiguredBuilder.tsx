@@ -208,11 +208,11 @@ export default function ConfiguredBuilder({
         </div>
 
         <div
-          className={
+          className={`pb-[calc(4rem+env(safe-area-inset-bottom))] sm:pb-[calc(3rem+env(safe-area-inset-bottom))] lg:pb-0 ${
             stickySummary
               ? "lg:sticky lg:top-[164px] lg:self-start"
-              : undefined
-          }
+              : ""
+          }`}
         >
           <SummaryCard
             title={builder.name}

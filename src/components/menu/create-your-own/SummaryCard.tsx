@@ -176,7 +176,7 @@ export default function SummaryCard({
             type="button"
             onClick={copySelection}
             aria-describedby={feedbackId}
-            className="min-h-12 w-full rounded-[14px] border border-primary bg-primary px-5 text-[15px] font-semibold text-dark transition-[background-color,border-color,transform] duration-150 hover:border-primary-hover hover:bg-primary-hover active:translate-y-px focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 motion-reduce:transform-none"
+            className="min-h-12 w-full scroll-mb-[calc(5rem+env(safe-area-inset-bottom))] rounded-[14px] border border-primary bg-primary px-5 text-[15px] font-semibold text-dark transition-[background-color,border-color,transform] duration-150 hover:border-primary-hover hover:bg-primary-hover active:translate-y-px focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 motion-reduce:transform-none"
           >
             Copy selection
           </button>
@@ -200,7 +200,7 @@ export default function SummaryCard({
           <button
             type="button"
             onClick={resetSelection}
-            className="min-h-11 w-full rounded-[13px] border border-dark/14 bg-white px-5 text-sm font-semibold text-dark transition-colors duration-150 hover:border-primary hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+            className="min-h-11 w-full scroll-mb-[calc(5rem+env(safe-area-inset-bottom))] rounded-[13px] border border-dark/14 bg-white px-5 text-sm font-semibold text-dark transition-colors duration-150 hover:border-primary hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
           >
             Reset selection
           </button>
