@@ -4,6 +4,7 @@ import Heading from "@/components/ui/Heading";
 import PremiumContainer from "@/components/ui/PremiumContainer";
 import Section from "@/components/ui/Section";
 import type { MenuProduct } from "@/features/menu/types";
+import { shouldBypassContentImageOptimizer } from "@/lib/content-images";
 import { getOptionalImageSource } from "@/lib/images";
 
 type SignatureProps = Readonly<{
@@ -51,6 +52,7 @@ export default function Signature({
                     src={imageSource}
                     alt={product.imageAlt ?? product.name}
                     fill
+                    unoptimized={shouldBypassContentImageOptimizer(imageSource)}
                     quality={85}
                     sizes="(max-width: 767px) calc(100vw - 40px), (max-width: 1023px) 58vw, 680px"
                     className="object-cover md:object-[50%_68%] transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] motion-safe:group-hover:scale-[1.012] motion-reduce:transition-none"

@@ -8,6 +8,7 @@ import type {
   PublishedGalleryCollection,
   PublishedGalleryItem,
 } from "@/features/gallery/types";
+import { shouldBypassContentImageOptimizer } from "@/lib/content-images";
 
 interface GalleryProps {
   collections: readonly PublishedGalleryCollection[];
@@ -76,6 +77,7 @@ function GalleryFigure({ item }: Readonly<{ item: PublishedGalleryItem }>) {
           src={item.imageUrl}
           alt={item.altText}
           fill
+          unoptimized={shouldBypassContentImageOptimizer(item.imageUrl)}
           quality={85}
           sizes="(max-width: 639px) calc(100vw - 40px), (max-width: 1023px) calc(50vw - 44px), 370px"
           className="object-cover transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] motion-safe:group-hover:scale-[1.012] motion-reduce:transition-none"

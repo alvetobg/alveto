@@ -28,6 +28,13 @@ export function createContentImageUrl(
   return `/content-image/${scope}/${encodeURIComponent(imageKey)}?v=${version}`;
 }
 
+export function shouldBypassContentImageOptimizer(source: string) {
+  return (
+    process.env.VERCEL_ENV === "preview" &&
+    source.startsWith("/content-image/")
+  );
+}
+
 export function hasCurrentContentImageVersion(
   suppliedVersion: string | null,
   image: StorageImageReference,

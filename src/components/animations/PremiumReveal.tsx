@@ -18,7 +18,8 @@ export default function PremiumReveal({
     <motion.div
       className={className}
       initial={reduceMotion ? false : { opacity: 0.96, y: 8 }}
-      whileInView={{ opacity: 1, y: 0 }}
+      animate={reduceMotion ? { opacity: 1, y: 0 } : undefined}
+      whileInView={reduceMotion ? undefined : { opacity: 1, y: 0 }}
       viewport={{ amount: 0.22, once: true }}
       transition={{
         duration: reduceMotion ? 0 : 0.52,

@@ -5,6 +5,7 @@ import Heading from "@/components/ui/Heading";
 import PremiumContainer from "@/components/ui/PremiumContainer";
 import Section from "@/components/ui/Section";
 import type { HomepageExperienceImages } from "@/features/homepage/types";
+import { shouldBypassContentImageOptimizer } from "@/lib/content-images";
 
 const moments = [
   {
@@ -104,6 +105,7 @@ function Moment({
           src={image}
           alt={alt}
           fill
+          unoptimized={shouldBypassContentImageOptimizer(image)}
           quality={85}
           sizes="(max-width: 767px) calc(100vw - 40px), (max-width: 1023px) 58vw, 680px"
           className={`moment-photo ${position}`}

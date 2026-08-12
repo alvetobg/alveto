@@ -7,6 +7,7 @@ import Section from "@/components/ui/Section";
 import type { HomepageAboutImages } from "@/features/homepage/types";
 import type { PublicReservationSettings } from "@/features/reservations/types";
 import type { PublicSiteSettings } from "@/features/site-settings/types";
+import { shouldBypassContentImageOptimizer } from "@/lib/content-images";
 
 type AboutProps = Readonly<{
   reservationSettings: PublicReservationSettings | null;
@@ -25,6 +26,10 @@ export default function About({
   );
   const primaryImage = images?.primary;
   const secondaryImage = images?.secondary;
+  const primaryImageSource =
+    primaryImage?.url ?? "/images/about/interior-1.webp";
+  const secondaryImageSource =
+    secondaryImage?.url ?? "/images/about/interior-2.webp";
 
   return (
     <Section id="about" className="bg-cream">
@@ -33,12 +38,15 @@ export default function About({
           <div className="mx-auto w-full max-w-[620px] md:relative md:pb-12 lg:mx-0">
             <div className="group relative aspect-[4/5] w-full overflow-hidden rounded-[20px] bg-[#eee8df] md:aspect-[4/3] md:w-[90%] md:rounded-[24px]">
               <Image
-                src={primaryImage?.url ?? "/images/about/interior-1.webp"}
+                src={primaryImageSource}
                 alt={
                   primaryImage?.altText ??
                   "Warm dining and seating area inside Alveto"
                 }
                 fill
+                unoptimized={shouldBypassContentImageOptimizer(
+                  primaryImageSource,
+                )}
                 quality={85}
                 sizes="(max-width: 767px) calc(100vw - 40px), (max-width: 1023px) 560px, 560px"
                 className="object-cover object-[56%_52%] transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] md:object-[50%_52%] motion-safe:group-hover:scale-[1.012] motion-reduce:transition-none"
@@ -47,9 +55,12 @@ export default function About({
 
             <div className="group relative ml-auto mt-4 aspect-[3/2] w-[68%] overflow-hidden rounded-[18px] bg-[#eee8df] md:absolute md:bottom-0 md:right-0 md:mt-0 md:w-[42%] md:rounded-[20px] md:border-[6px] md:border-cream">
               <Image
-                src={secondaryImage?.url ?? "/images/about/interior-2.webp"}
+                src={secondaryImageSource}
                 alt={secondaryImage?.altText ?? "Interior details at Alveto"}
                 fill
+                unoptimized={shouldBypassContentImageOptimizer(
+                  secondaryImageSource,
+                )}
                 quality={85}
                 sizes="(max-width: 767px) 68vw, 260px"
                 className="object-cover object-[50%_48%] transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] motion-safe:group-hover:scale-[1.012] motion-reduce:transition-none"
